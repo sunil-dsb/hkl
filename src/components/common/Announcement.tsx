@@ -12,7 +12,7 @@ export default function Announcement() {
     return (
         <section className="bg-olive text-white min-h-[40px] flex items-center justify-between px-4 sm:px-6 py-2">
             <p className="flex-1 text-center text-xs sm:text-sm leading-tight sm:leading-none font-medium">
-                Join us for the 6th International HKL Conference 2026 in UK on 11th & 12th April 2026. <Link href="/conference" className="underline hover:text-mint transition-colors cursor-pointer whitespace-nowrap ml-1">Learn More</Link>
+                Join us for the 6th International HKL Conference 2026 in UK on 11th & 12th April 2026. <Link href="https://www.eventbrite.com/e/6th-international-humility-kindness-love-hkl-conference-telford-uk-tickets-1983385930710?aff=oddtdtcreator" className="underline hover:text-mint transition-colors cursor-pointer whitespace-nowrap ml-1">Reserve your Free Seat</Link>
             </p>
             <button
                 onClick={() => setIsVisible(false)}

@@ -3,7 +3,6 @@ import {
   GoArrowRight,
   GoCheckCircleFill,
 } from "react-icons/go";
-import { RxArrowTopRight } from "react-icons/rx";
 
 export default function StyleGuide() {
   return (

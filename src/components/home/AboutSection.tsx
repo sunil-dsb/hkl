@@ -1,4 +1,5 @@
 import Image from "next/image";
+import BoxReveal, { BOX_COLORS } from "@/components/ui/BoxReveal";
 
 const images = [
     {
@@ -27,6 +28,13 @@ const images = [
     }
 ];
 
+const aboutParagraphs = [
+    "The HKL Global Movement is dedicated to inspiring everyone to awaken, go within, and reconnect with the virtues of Humility, Kindness & Love (HKL) that live within us.",
+    "At a time when humanity is clouded by ego, coldness, and disconnection, HKL offers a path back home to truth, helping us make ourselves, our homes, our communities, and the world more beautiful.",
+    "When we embody HKL, we transform ourselves, achieve true success, and live as our most authentic selves. In doing so, we create ripples of change that flow into our homes, our communities, and the wider world.",
+    "The HKL Global Movement begins in the heart of each person and, as a secular movement, transcends culture, faith, and background, embracing and welcoming everyone.",
+];
+
 export default function AboutSection() {
     return (
         <section className="relative w-full py-20 overflow-hidden">
@@ -35,14 +43,15 @@ export default function AboutSection() {
                 {/* HEADLINE */}
                 <div className="text-center max-w-3xl mx-auto space-y-4 relative z-10 mb-12">
                     <span className="badge bg-mint!">About HKL</span>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl leading-tighter font-bold">
-                        Making Ourselves More Beautiful
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl leading-tighter font-bold font-hkl">
+                        Making Ourselves More <span className="font-playfair italic text-olive">Beautiful</span>
                     </h2>
                     <p className="text-lg text-primary-950/80 font-outfit md:mx-20">
-                        The self transformation does not begin “out there,” it begins within.
+                        The self transformation does not begin &#8220;out there,&#8221; it begins within.
                     </p>
                 </div>
 
+                {/* DESKTOP LAYOUT */}
                 <div className="hidden lg:grid grid-cols-3 gap-8 md:gap-12 items-center">
                     {/* LEFT COLUMN */}
                     <div className="flex flex-col gap-8 h-full justify-between py-12 order-1">
@@ -51,26 +60,15 @@ export default function AboutSection() {
                         ))}
                     </div>
 
-                    {/* CENTER COLUMN (Text) */}
-                    <div className="relative flex flex-col justify-center items-center text-center order-2 px-4">
+                    {/* CENTER COLUMN */}
+                    <div className="relative flex flex-col justify-center items-center order-2 px-4">
                         <div className="max-w-md mx-auto space-y-8">
-                            <div className="space-y-4 font-outfit text-primary-950/80 leading-relaxed text-justify">
-                                <p>
-                                    The HKL Global Movement is dedicated to inspiring everyone to awaken, go within, and reconnect with the virtues of Humility, Kindness & Love (HKL) that live within us.
-                                </p>
-                                <p>
-                                    At a time when humanity is clouded by ego, coldness, and disconnection, HKL offers a path back home to truth, helping us make ourselves, our homes, our communities, and the world more beautiful.
-                                </p>
-                                <p>
-                                    When we embody HKL, we transform ourselves, achieve true success, and live as our most authentic selves. In doing so, we create ripples of change that flow into our homes, our communities, and the wider world.
-                                </p>
-                                <p>
-                                    The HKL Global Movement begins in the heart of each person and, as a secular movement, transcends culture, faith, and background, embracing and welcoming everyone.
-                                </p>
+                            <BoxReveal paragraphs={aboutParagraphs} boxColor={BOX_COLORS.mint} />
+                            <div className="flex justify-center pt-6">
+                                <button className="btn-primary">
+                                    Begin Practice
+                                </button>
                             </div>
-                            <button className="px-5 py-3 md:py-3 cursor-pointer leading-none inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap bg-primary-950 text-primary-50 rounded-full hover:bg-primary-900 focus-visible:ring-primary-950 active:scale-95 text-base z-20 relative">
-                                Begin Practice
-                            </button>
                         </div>
                     </div>
 
@@ -82,30 +80,18 @@ export default function AboutSection() {
                     </div>
                 </div>
 
+                {/* MOBILE LAYOUT */}
                 <div className="lg:hidden flex flex-col gap-12">
-
-                    {/* 1. Text Content (First) */}
                     <div className="max-w-xl mx-auto space-y-8 text-center px-4">
-                        <div className="space-y-4 font-outfit text-primary-950/80 leading-relaxed text-justify">
-                            <p>
-                                The HKL Global Movement is dedicated to inspiring everyone to awaken, go within, and reconnect with the virtues of Humility, Kindness & Love (HKL) that live within us.
-                            </p>
-                            <p>
-                                At a time when humanity is clouded by ego, coldness, and disconnection, HKL offers a path back home to truth, helping us make ourselves, our homes, our communities, and the world more beautiful.
-                            </p>
-                            <p>
-                                When we embody HKL, we transform ourselves, achieve true success, and live as our most authentic selves. In doing so, we create ripples of change that flow into our homes, our communities, and the wider world.
-                            </p>
-                            <p>
-                                The HKL Global Movement begins in the heart of each person and, as a secular movement, transcends culture, faith, and background, embracing and welcoming everyone.
-                            </p>
+                        <BoxReveal paragraphs={aboutParagraphs} boxColor={BOX_COLORS.mint} />
+                        <div className="flex justify-center">
+                            <button className="btn-primary w-full sm:w-auto">
+                                Begin Practice
+                            </button>
                         </div>
-                        <button className="px-8 py-3 bg-primary-950 text-primary-50 rounded-full font-medium active:scale-95 transition-transform w-full sm:w-auto">
-                            Begin Practice
-                        </button>
                     </div>
 
-                    {/* 2. Image Slider */}
+                    {/* Image Slider */}
                     <div className="w-full overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 px-4 scrollbar-hide">
                         {images.map((img) => (
                             <div key={img.id} className="snap-center shrink-0 w-[85vw] sm:w-[350px]">
@@ -116,27 +102,34 @@ export default function AboutSection() {
                 </div>
 
             </div>
+            <Image
+                src="/12.svg"
+                alt=""
+                width={300}
+                height={300}
+                className="w-64 sm:w-80 md:w-96 lg:w-[30%] h-auto absolute top-12 right-0 -rotate-16 scale-x-[-1]"
+                aria-hidden="true"
+            />
         </section>
+
     );
 }
 
 const getAlignment = (position: string) => {
     switch (position) {
-        case "left-top": return "lg:self-start";
-        case "left-bottom": return "lg:self-end lg:translate-x-8";
-        case "right-top": return "lg:self-end";
-        case "right-bottom": return "lg:self-start lg:-translate-x-8";
+        case "left-top": return "lg:self-start lg:translate-y-42";
+        case "left-bottom": return "lg:self-end lg:translate-x-6";
+        case "right-top": return "lg:self-end lg:translate-y-42";
+        case "right-bottom": return "lg:self-start lg:-translate-x-6";
         default: return "";
     }
-}
+};
 
-function ImageCard({ image, isMobile = false }: { image: typeof images[0], isMobile?: boolean }) {
+function ImageCard({ image, isMobile = false }: { image: typeof images[0]; isMobile?: boolean }) {
     const desktopClasses = !isMobile ? `lg:mx-0 ${getAlignment(image.position)}` : "mx-auto";
 
     return (
-        <div
-            className={`relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-4 border-primary-200 ${desktopClasses} ${!isMobile ? 'max-w-[280px]' : ''}`}
-        >
+        <div className={`relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-4 border-primary-200 ${desktopClasses} ${!isMobile ? "max-w-[280px]" : ""}`}>
             <Image
                 src={image.src}
                 alt={image.alt}

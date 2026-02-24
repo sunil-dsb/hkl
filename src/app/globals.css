@@ -28,19 +28,12 @@
   --color-background: var(--color-primary-50);
   --color-foreground: var(--color-rich-black);
 
-  /* Primary Actions */
-  --color-primary: var(--color-deep-green);
-  --color-primary-foreground: #ffffff;
-
-  /* Secondary/Accents */
-  --color-secondary: var(--color-olive);
-  --color-accent: var(--color-joy-gold);
-
   /* Typography Fonts */
   --font-hkl: var(--font-hkl), sans-serif;
   --font-inter: var(--font-inter), sans-serif;
   --font-outfit: var(--font-outfit), sans-serif;
   --font-hkl-centra: var(--font-hkl-centra), sans-serif;
+  --font-playfair: var(--font-playfair), serif;
 }
 
 body {
@@ -118,10 +111,26 @@ html {
   .animate-fade-in-up {
     animation: fade-in-up 0.8s ease-out forwards;
   }
+
+  .bg-gradient-warm {
+    background: linear-gradient(180deg, #ffddadff, #ffedc6d1 52%, #FCFDFD);
+  }
 }
 
 @layer components {
   .badge {
     @apply inline-block px-3 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full;
+  }
+
+  .btn {
+    @apply cursor-pointer leading-none inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap rounded-full active:scale-95;
+  }
+
+  .btn-primary {
+    @apply cursor-pointer leading-none inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap rounded-full active:scale-95 px-5 py-3 bg-primary-950 text-primary-50 hover:bg-primary-900 focus-visible:ring-primary-950 text-base;
+  }
+
+  .btn-mint {
+    @apply cursor-pointer leading-none inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap rounded-full active:scale-95 px-6 py-4 bg-mint text-primary-950 hover:bg-mint/90 focus-visible:ring-mint text-lg shadow-lg hover:shadow-xl;
   }
 }

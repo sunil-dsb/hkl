@@ -1,50 +1,49 @@
+import TextReveal from "@/components/ui/TextReveal";
+import Image from "next/image";
+
+const segments = [
+  {
+    text: "We live in a world that promised success would bring peace. Yet even with comfort, achievement, and recognition, many of us still feel restless within.",
+  },
+  {
+    text: "Stress has become normal. Stillness feels distant. We search outside ourselves for what can only be found within.",
+  },
+  {
+    text: "Coming home to Humility, Kindness & Love",
+    className: "bg-primary-100 px-3 py-0 rounded-full",
+  },
+  {
+    text: "is not about adding more to our lives it is about returning to what makes life meaningful.",
+  },
+  {
+    text: "We are Humility. We are Kindness. We are Love.",
+    className: "bg-mint px-2 py-0.5 rounded-lg underline underline-offset-2 decoration-2 decoration-olive",
+  },
+  {
+    text: "This is our daily commitment to live these virtues in action and create a truly beautiful and successful life from within.",
+  },
+];
+
 export default function DailyPractice() {
-    return (
-        <section className="w-full py-24" style={{
-            background: 'linear-gradient(180deg, #ffddadff, #ffedc6d1 52%,  #FCFDFD)'
-        }}>
-            <div className="z-10 max-w-4xl mx-auto px-6 text-center space-y-12">
-
-                {/* Intro */}
-                <span className="inline-block text-sm font-bold font-hkl-centra uppercase tracking-[0.2em] text-primary-600">
-                    Introducing the Daily Practice
-                </span>
-
-                {/* Main Content Container with Edge Blur/Fade */}
-                <div className="space-y-8 md:space-y-10 relative">
-
-                    {/* Headline */}
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-hkl text-primary-950 leading-[1.2] max-w-3xl mx-auto">
-                        I Commit to Practicing HKL Daily
-                    </h2>
-
-                    <span className="font-medium text-terracotta">Humility. Kindness. Love.</span>
-
-                    {/* Subheadline */}
-                    <p className="text-lg md:text-xl font-outfit text-primary-800 leading-relaxed max-w-2xl mx-auto font-light">
-                        The transformation will not come from talk alone it will come from practicing the virtues. <br className="hidden md:block" />
-                    </p>
-
-                    {/* The Practice Steps */}
-                    <div className="space-y-6 pt-4">
-                        <p className="text-xl md:text-2xl font-hkl-centra text-primary-900">
-                            Every morning, when you wake up, & before your feet touch the ground, remind yourself
-                        </p>
-
-                        <div className="space-y-2 text-2xl md:text-3xl font-hkl text-primary-950/90">
-                            <p>We are humility.</p>
-                            <p>We are kindness.</p>
-                            <p>We are love.</p>
-                        </div>
-                    </div>
-                    <div className="pt-8 relative">
-                        <p className="text-lg font-outfit text-primary-800/60 max-w-xl mx-auto leading-relaxed blur-[0.5px]">
-                            This is our commitment, not for a day, not for a week, but every day in deep gratitude for being blessed with this sacred human life.
-                        </p>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-    );
+  return (
+    <section className="w-full py-28 px-6 relative overflow-hidden">
+      <div className="max-w-3xl mx-auto flex flex-col items-center gap-24">
+        <TextReveal
+          segments={segments}
+          pClassName="text-xl sm:text-2xl md:text-[1.60rem] font-outfit text-primary-900 leading-normal"
+        />
+      </div>
+      {/* Decorative Tree Branches */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <Image
+          src="/12.svg"
+          alt=""
+          width={300}
+          height={300}
+          className="w-64 sm:w-80 md:w-96 lg:w-[30%] h-auto absolute -bottom-12 left-0 rotate-16"
+          aria-hidden="true"
+        />
+      </div>
+    </section>
+  );
 }

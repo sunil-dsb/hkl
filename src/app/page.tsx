@@ -1,5 +1,6 @@
 import HeroSection from "@/components/home/HeroSection";
 import AboutSection from "@/components/home/AboutSection";
+import DailyPractice from "@/components/home/DailyPractice";
 import Footer from "@/components/layout/Footer";
 import Announcement from "@/components/common/Announcement";
 import FooterCta from "@/components/layout/FooterCta";
@@ -7,7 +8,6 @@ import Faqs from "@/components/home/Faqs";
 import FoundingMembers from "@/components/home/FoundingMembers";
 import ThoughtCard from "@/components/home/ThoughtCard";
 import StoriesOfImpact from "@/components/home/StoriesOfImpact";
-import TimelineSection from "@/components/home/TimelineSection";
 
 export default function Home() {
   return (
@@ -19,6 +19,7 @@ export default function Home() {
 
       {/* REST OF PAGE */}
       <div>
+        <DailyPractice />
         <AboutSection />
         <StoriesOfImpact />
         <ThoughtCard />

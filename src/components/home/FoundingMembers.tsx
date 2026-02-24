@@ -11,46 +11,39 @@ const members: Member[] = [
   {
     name: "Mr. Amarpreet Singh",
     location: "USA",
-    image:
-      "/m2.webp",
+    image: "/m2.webp",
   },
   {
     name: "Ms. Oya Erdogan",
     location: "Germany",
-    image:
-      "/m1.webp",
+    image: "/m1.webp",
   },
   {
     name: "Mr. Bradley Field",
     location: "Australia",
-    image:
-      "/m3.webp",
+    image: "/m3.webp",
   },
   {
     name: "Ms. Sara Harakat",
     location: "France",
-    image:
-      "/m5.webp",
+    image: "/m5.webp",
   },
 
   {
     name: "Mr. Baptiste Antoine",
     location: "Luxembourg",
-    image:
-      "/m6.webp",
+    image: "/m6.webp",
   },
   {
     name: "Dr. Anna Stewart Lbarra",
     location: "Panama",
-    image:
-      "/m7.webp",
+    image: "/m7.webp",
   },
 
   {
     name: "Mr. Richard Good",
     location: "United Kingdom",
-    image:
-      "/m4.webp",
+    image: "/m4.webp",
   },
 ];
 
@@ -59,8 +52,9 @@ export default function FoundingMembers() {
     <section className="flex flex-col items-center gap-10 font-hkl py-12 overflow-hidden z-10 w-full px-4 md:px-6">
       <div className="text-center max-w-3xl mx-auto space-y-4 relative z-10">
         <span className="badge">Founding Members</span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl leading-tighter font-bold">
-          HKL Foundation Board Members
+        <h2 className="text-3xl sm:text-4xl md:text-5xl leading-tighter font-bold font-hkl">
+          HKL Foundation{" "}
+          <span className="font-playfair text-olive">Board Members</span>
         </h2>
         <p className="text-lg text-primary-950/80 font-outfit md:mx-20">
           HKL is a registered non-profit organization (registered in US). The
@@ -68,11 +62,11 @@ export default function FoundingMembers() {
         </p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-x-3 gap-y-4 w-full max-w-7xl mx-auto">
+      <div className="flex flex-wrap justify-center gap-5 w-full max-w-7xl mx-auto">
         {members.map((member, index) => (
           <div
             key={index}
-            className="flex flex-col gap-4 group items-start w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] md:w-60"
+            className="flex flex-col gap-4 group hover:cursor-pointer items-start w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] md:w-60"
           >
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-primary-200">
               <Image
@@ -93,8 +87,11 @@ export default function FoundingMembers() {
                   {member.location}
                 </p>
               </div>
-              <div className="p-2 bg-mint flex items-center justify-end rounded-full mr-2 cursor-pointer" aria-hidden="true">
-                <RxArrowTopRight className="text-dark-forest text-sm" />
+              <div
+                className="p-2.5 bg-mint flex items-center justify-center rounded-full mr-2 cursor-pointer"
+                aria-hidden="true"
+              >
+                <RxArrowTopRight className="text-dark-forest transition-transform duration-300 ease-out group-hover:rotate-45" />
               </div>
             </div>
           </div>

@@ -53,12 +53,12 @@ export default function Faqs() {
             <div
                 className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
                 style={{
-                    background: `linear-gradient(to bottom, transparent 0%, #ffddadff 100%)`,
+                    background: 'linear-gradient(to bottom, transparent 0%, #ffddadff 100%)',
                 }}
             />
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center z-20 relative tracking-tight px-4">
-                Frequently Asked <br className="hidden md:block" /> Questions
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-hkl text-center z-20 relative tracking-tight px-4">
+                Frequently Asked <br className="hidden md:block" /> <span className="font-playfair italic text-olive">questions</span>
             </h2>
 
             <div className="w-full max-w-4xl px-4 z-20 relative flex flex-col gap-2">
@@ -94,7 +94,7 @@ export default function Faqs() {
                                 className={`transition-all duration-300 ease-in-out overflow-hidden w-full ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                                     }`}
                             >
-                                <div className="px-6 pb-6 text-forest font-medium leading-tight">
+                                <div className="px-6 pb-6 text-dark-forest font-medium leading-tight">
                                     {faq.answer}
                                 </div>
                             </div>

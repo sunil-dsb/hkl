@@ -62,11 +62,11 @@ export default function FoundingMembers() {
         </p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-5 w-full max-w-7xl mx-auto">
+      <div className="flex flex-wrap justify-center gap-3 md:gap-5 w-full max-w-7xl mx-auto">
         {members.map((member, index) => (
           <div
             key={index}
-            className="flex flex-col gap-4 group hover:cursor-pointer items-start w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] md:w-60"
+            className="flex flex-col gap-4 group hover:cursor-pointer items-start w-[calc(47%-3px)] sm:w-[calc(33.33%-8px)] md:w-60"
           >
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-primary-200">
               <Image

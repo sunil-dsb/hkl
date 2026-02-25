@@ -77,7 +77,7 @@ export default function StoriesOfImpact() {
   };
 
   return (
-    <section className="flex flex-col items-center gap-12 font-hkl py-16 w-full px-4 md:px-6">
+    <section className="flex flex-col items-center gap-12 font-hkl md:py-12 w-full px-4 md:px-6">
 
       {/* Heading */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -179,8 +179,8 @@ function VideoCard({
 
   useEffect(() => {
     if (!pillRef.current) return;
-    quickX.current = gsap.quickTo(pillRef.current, "x", { duration: 0.45, ease: "power3.out" });
-    quickY.current = gsap.quickTo(pillRef.current, "y", { duration: 0.45, ease: "power3.out" });
+    quickX.current = gsap.quickTo(pillRef.current, "x", { duration: 0.25, ease: "power2.out" });
+    quickY.current = gsap.quickTo(pillRef.current, "y", { duration: 0.25, ease: "power2.out" });
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -190,8 +190,19 @@ function VideoCard({
     quickY.current(e.clientY - rect.top);
   }, []);
 
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Snap pill instantly to cursor on enter (prevents flying from top-left)
+    const rect = thumbRef.current?.getBoundingClientRect();
+    if (rect && pillRef.current) {
+      gsap.set(pillRef.current, {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+    setIsHovered(true);
+  }, []);
+
   return (
-    // Clicking anywhere on the card toggles the video
     <div className="w-full cursor-pointer" onClick={onToggle}>
       <div className="bg-primary-100 rounded-3xl p-2">
 
@@ -200,7 +211,7 @@ function VideoCard({
           ref={thumbRef}
           className="relative aspect-[9/14] rounded-2xl overflow-hidden bg-primary-200"
           onMouseMove={handleMouseMove}
-          onMouseEnter={() => setIsHovered(true)}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={() => setIsHovered(false)}
         >
           {!isPlaying ? (
@@ -235,13 +246,11 @@ function VideoCard({
               style={{
                 opacity: isHovered ? 1 : 0,
                 transition: "opacity 0.2s ease",
-                willChange: "transform",
               }}
             >
-              {/* Inner wrapper handles the centering offset so GSAP transform is clean */}
               <div className="-translate-x-1/2 -translate-y-1/2">
-                <div className="bg-dark-forest text-white px-5 py-2.5 rounded-full shadow-xl">
-                  <span className="text-sm font-outfit font-semibold tracking-widest uppercase">Play</span>
+                <div className="bg-white/90 backdrop-blur-sm text-primary-950 px-4 py-1 rounded-full shadow-lg border border-white/20">
+                  <span className="text-xs font-outfit font-semibold tracking-wider uppercase">Play</span>
                 </div>
               </div>
             </div>

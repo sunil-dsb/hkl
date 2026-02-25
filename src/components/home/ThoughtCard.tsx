@@ -13,7 +13,7 @@ export default function ThoughtCard() {
             different. &quot;
           </h2>
 
-          <div className="relative w-full max-w-sm aspect-video md:aspect-[2.2/1] z-10">
+          <div className="relative w-full max-w-sm aspect-[2/1.5] md:aspect-[2.2/1] z-10">
             <Image
               src="/mind.png"
               fill

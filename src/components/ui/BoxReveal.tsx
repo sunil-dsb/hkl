@@ -44,52 +44,30 @@ export default function BoxReveal({
 
         const totalWords = wordEls.length;
         const overlapIn = 15;
-        const overlapOut = 5;
 
         const scaleIn = 1 / Math.min(
             1 + overlapIn / totalWords,
             1 + (totalWords - 1) / totalWords + overlapIn / totalWords
         );
-        const scaleOut = 1 / Math.max(
-            1,
-            (totalWords - 1) / totalWords + overlapOut / totalWords
-        );
 
         const st = ScrollTrigger.create({
             trigger: container,
-            start: "top 75%",
+            start: "top 95%",
             end: "bottom 25%",
-            scrub: true,
+            scrub: 1.5,
             onUpdate: ({ progress }) => {
-                if (progress <= 0.7) {
-                    const rp = progress / 0.7;
+                for (let i = 0; i < totalWords; i++) {
+                    const start = (i / totalWords) * scaleIn;
+                    const end = start + (overlapIn / totalWords) * scaleIn;
+                    const wp = progress <= start ? 0 : progress >= end ? 1 : (progress - start) / (end - start);
 
-                    for (let i = 0; i < totalWords; i++) {
-                        const start = (i / totalWords) * scaleIn;
-                        const end = start + (overlapIn / totalWords) * scaleIn;
-                        const wp = rp <= start ? 0 : rp >= end ? 1 : (rp - start) / (end - start);
+                    wordEls[i].style.opacity = String(wp);
 
-                        wordEls[i].style.opacity = String(wp);
+                    const boxFade = wp >= 0.9 ? (wp - 0.9) / 0.1 : 0;
+                    wordEls[i].style.backgroundColor = `rgba(${boxColor}, ${Math.max(0, 1 - boxFade) * BOX_OPACITY})`;
 
-                        const boxFade = wp >= 0.9 ? (wp - 0.9) / 0.1 : 0;
-                        wordEls[i].style.backgroundColor = `rgba(${boxColor}, ${Math.max(0, 1 - boxFade) * BOX_OPACITY})`;
-
-                        const tp = wp >= 0.9 ? (wp - 0.9) / 0.1 : 0;
-                        if (spanEls[i]) spanEls[i].style.opacity = String(Math.sqrt(tp));
-                    }
-                } else {
-                    const rp = (progress - 0.7) / 0.3;
-
-                    for (let i = 0; i < totalWords; i++) {
-                        wordEls[i].style.opacity = "1";
-
-                        const start = (i / totalWords) * scaleOut;
-                        const end = start + (overlapOut / totalWords) * scaleOut;
-                        const rwp = rp <= start ? 0 : rp >= end ? 1 : (rp - start) / (end - start);
-
-                        if (spanEls[i]) spanEls[i].style.opacity = rwp > 0 ? String(1 - rwp) : "1";
-                        wordEls[i].style.backgroundColor = `rgba(${boxColor}, ${rwp * BOX_OPACITY})`;
-                    }
+                    const tp = wp >= 0.9 ? (wp - 0.9) / 0.1 : 0;
+                    if (spanEls[i]) spanEls[i].style.opacity = String(Math.sqrt(tp));
                 }
             },
         });
@@ -110,9 +88,7 @@ export default function BoxReveal({
                     {para.split(/\s+/).filter(Boolean).map((word, wIdx) => (
                         <span
                             key={wIdx}
-                            className={`br-word inline-block relative mr-[0.2em] ${radiusClass} px-[0.3em] py-[0.1em]`}
-                            style={{ willChange: "opacity, background-color" }}
-                        >
+                            className={`br-word inline-block relative mr-[0.2em] ${radiusClass} px-[0.3em] py-[0.1em]`}>
                             <span style={{ position: "relative" }}>{word}</span>
                         </span>
                     ))}

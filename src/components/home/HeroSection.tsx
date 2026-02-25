@@ -1,8 +1,7 @@
-import { GoArrowRight } from "react-icons/go";
 import { RxArrowTopRight } from "react-icons/rx";
 export default function HeroSection() {
     return (
-        <section className="relative w-full h-[110vh] min-h-160 bg-black overflow-hidden">
+        <section className="relative w-full h-[90vh] sm:h-[110vh] min-h-160 bg-black overflow-hidden">
             {/* Video */}
             <div className="absolute inset-0">
                 <video
@@ -25,9 +24,9 @@ export default function HeroSection() {
             </div>
 
             {/* Hero Content */}
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center text-white px-4">
-                <div className="max-w-4xl space-y-6 md:space-y-8 mt-6">
-                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-hkl font-semibold tracking-tight leading-[1.1]">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center text-white px-2 sm:px-4">
+                <div className="max-w-4xl space-y-6 md:space-y-8 sm:mt-6">
+                    <h1 className="text-5xl sm:text-5xl md:text-7xl font-hkl font-semibold tracking-tight leading-[1.1]">
                         Start your day with <br className="hidden md:block" />
                         <span className="italic font-light text-mint font-playfair">Humility</span>,{" "}
                         <span className="italic font-light text-mint font-playfair">Kindness</span> <span className="italic">&</span>{" "}
@@ -38,7 +37,7 @@ export default function HeroSection() {
                         A simple 2-minute morning practice for a clearer, more intentional day.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                         <button className="btn-mint flex gap-3">
                             Start My Morning
                         </button>

@@ -45,9 +45,9 @@ export default function TextReveal({
 
         const st = ScrollTrigger.create({
             trigger: container,
-            start: "top 80%",
+            start: "top 95%",
             end: "bottom 20%",
-            scrub: true,
+            scrub: 1.5,
             onUpdate: ({ progress }) => {
                 for (let i = 0; i < totalWords; i++) {
                     const start = (i / totalWords) * scale;
@@ -76,7 +76,6 @@ export default function TextReveal({
                     <span
                         key={`${sIdx}-${wIdx}`}
                         className={`tr-word inline-block mr-[0.25em] mb-[0.1em] ${seg.className ?? ""}`}
-                        style={{ willChange: "opacity" }}
                     >
                         {word}
                     </span>

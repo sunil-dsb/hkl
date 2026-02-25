@@ -17,9 +17,9 @@ const navLinks = [
 
 export default function Footer() {
     return (
-        <footer className="-mt-24 md:-mt-32 relative z-10 pointer-events-none">
+        <footer className="-mt-42 md:-mt-32 relative z-10 pointer-events-none">
             {/* Mountain Image */}
-            <section className="relative w-full min-h-[70vh] md:min-h-[80vh] pointer-events-auto">
+            <section className="relative w-full min-h-[80vh] md:min-h-[75vh] pointer-events-auto">
                 <Image
                     src="/3.svg"
                     alt="HKL Landscape"
@@ -38,7 +38,7 @@ export default function Footer() {
                 />
 
                 {/* Links */}
-                <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-5 sm:pb-6 pt-10">
+                <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-5 sm:pb-6">
                     <div className="container mx-auto flex flex-col gap-4 sm:gap-3">
                         {/* Logo + Social icons */}
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">

@@ -1,5 +1,5 @@
 import TextReveal from "@/components/ui/TextReveal";
-import Image from "next/image";
+import ParallaxBranch from "@/components/ui/ParallaxBranch";
 
 const segments = [
   {
@@ -26,7 +26,7 @@ const segments = [
 
 export default function DailyPractice() {
   return (
-    <section className="w-full py-28 px-6 relative overflow-hidden">
+    <section className="w-full py-12 md:py-28 px-6 relative overflow-x-clip">
       <div className="max-w-3xl mx-auto flex flex-col items-center gap-24">
         <TextReveal
           segments={segments}
@@ -35,13 +35,24 @@ export default function DailyPractice() {
       </div>
       {/* Decorative Tree Branches */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <Image
+        <ParallaxBranch
+          src="/10.svg"
+          direction="left"
+          distance={144}
+          positionClassName="hidden md:block w-42 md:w-72 lg:w-[15%] h-auto absolute -top-2 -right-12"
+        />
+        <ParallaxBranch
+          src="/10.svg"
+          direction="left"
+          distance={144}
+          positionClassName="opacity-30 md:opacity-100 w-32 md:w-52 lg:w-[12%] h-auto absolute top-20 -right-24"
+        />
+        <ParallaxBranch
           src="/12.svg"
-          alt=""
-          width={300}
-          height={300}
-          className="w-64 sm:w-80 md:w-96 lg:w-[30%] h-auto absolute -bottom-12 left-0 rotate-16"
-          aria-hidden="true"
+          direction="left"
+          distance={50}
+          positionClassName="w-42 md:w-72 lg:w-[23%] h-auto absolute -bottom-6 md:-bottom-10 left-0"
+          imageClassName="rotate-16"
         />
       </div>
     </section>

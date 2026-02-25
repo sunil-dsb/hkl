@@ -1,5 +1,6 @@
 import Image from "next/image";
 import BoxReveal, { BOX_COLORS } from "@/components/ui/BoxReveal";
+import ParallaxBranch from "@/components/ui/ParallaxBranch";
 
 const images = [
     {
@@ -94,7 +95,7 @@ export default function AboutSection() {
                     {/* Image Slider */}
                     <div className="w-full overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 px-4 scrollbar-hide">
                         {images.map((img) => (
-                            <div key={img.id} className="snap-center shrink-0 w-[85vw] sm:w-[350px]">
+                            <div key={img.id} className="snap-center shrink-0 w-[70vw] sm:w-[350px]">
                                 <ImageCard image={img} isMobile />
                             </div>
                         ))}
@@ -102,13 +103,11 @@ export default function AboutSection() {
                 </div>
 
             </div>
-            <Image
+            <ParallaxBranch
                 src="/12.svg"
-                alt=""
-                width={300}
-                height={300}
-                className="w-64 sm:w-80 md:w-96 lg:w-[30%] h-auto absolute top-12 right-0 -rotate-16 scale-x-[-1]"
-                aria-hidden="true"
+                direction="right"
+                positionClassName="w-64 sm:w-72 md:w-80 lg:w-[25%] h-auto absolute top-4 md:top-6 lg:top-8 right-0"
+                imageClassName="-rotate-16 scale-x-[-1]"
             />
         </section>
 

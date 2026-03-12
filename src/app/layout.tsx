@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -46,7 +47,7 @@ export default function RootLayout({
       <body
         className={`${hkl.variable} ${hklCentra.variable} ${outfit.variable} ${playfair.variable} antialiased ${inter.variable}`}
       >
-        {children}
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>
   );

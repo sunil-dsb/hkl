@@ -17,6 +17,10 @@ interface BoxRevealProps {
     className?: string;
     boxColor?: string;
     boxRadius?: "full" | "md";
+    triggerStart?: string;
+    triggerEnd?: string;
+    scrub?: number;
+    overlap?: number;
 }
 
 export default function BoxReveal({
@@ -24,6 +28,10 @@ export default function BoxReveal({
     className = "",
     boxColor = P100_RGB,
     boxRadius = "full",
+    triggerStart = "top 95%",
+    triggerEnd = "bottom 25%",
+    scrub = 1.5,
+    overlap = 15,
 }: BoxRevealProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +51,7 @@ export default function BoxReveal({
         for (const s of spanEls) s.style.opacity = "0";
 
         const totalWords = wordEls.length;
-        const overlapIn = 15;
+        const overlapIn = overlap;
 
         const scaleIn = 1 / Math.min(
             1 + overlapIn / totalWords,
@@ -52,9 +60,9 @@ export default function BoxReveal({
 
         const st = ScrollTrigger.create({
             trigger: container,
-            start: "top 95%",
-            end: "bottom 25%",
-            scrub: 1.5,
+            start: triggerStart,
+            end: triggerEnd,
+            scrub,
             onUpdate: ({ progress }) => {
                 for (let i = 0; i < totalWords; i++) {
                     const start = (i / totalWords) * scaleIn;
@@ -77,7 +85,7 @@ export default function BoxReveal({
             for (const w of wordEls) { w.style.opacity = ""; w.style.backgroundColor = ""; }
             for (const s of spanEls) s.style.opacity = "";
         };
-    }, [boxColor]);
+    }, [boxColor, overlap, scrub, triggerEnd, triggerStart]);
 
     const radiusClass = boxRadius === "full" ? "rounded-full" : "rounded-md";
 

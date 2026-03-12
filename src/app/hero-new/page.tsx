@@ -7,7 +7,6 @@ import StoriesOfImpact from '@/components/home/StoriesOfImpact'
 import ThoughtCard from '@/components/home/ThoughtCard'
 import Footer from '@/components/layout/Footer'
 import FooterCta from '@/components/layout/FooterCta'
-import React from 'react'
 import HeroNewSection from './HeroNewSection'
 
 export default function page() {

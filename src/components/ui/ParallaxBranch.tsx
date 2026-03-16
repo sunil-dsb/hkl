@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,7 +9,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface ParallaxBranchProps {
     src: string;
-    /** Position & size classes for the wrapper (absolute, top, left, width, etc.) */
     positionClassName: string;
     imageClassName?: string;
     direction: "left" | "right";
@@ -25,12 +24,14 @@ export default function ParallaxBranch({
 }: ParallaxBranchProps) {
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
 
         const section = el.closest("section") || el.parentElement;
         const xDistance = direction === "left" ? -distance : distance;
+
+        gsap.set(el, { force3D: true });
 
         const tween = gsap.to(el, {
             x: xDistance,
@@ -40,6 +41,7 @@ export default function ParallaxBranch({
                 start: "top bottom",
                 end: "bottom top",
                 scrub: 1.5,
+                invalidateOnRefresh: true,
             },
         });
 
@@ -56,7 +58,7 @@ export default function ParallaxBranch({
                 alt=""
                 width={300}
                 height={300}
-                className={`w-full h-auto ${imageClassName}`}
+                className={`h-auto w-full ${imageClassName}`}
                 aria-hidden="true"
             />
         </div>

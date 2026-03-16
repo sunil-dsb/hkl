@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,33 +12,70 @@ export default function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
+  useLayoutEffect(() => {
+    const reduceMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    const finePointerQuery = window.matchMedia(
+      "(hover: hover) and (pointer: fine)"
+    );
+    let cleanupCurrent = () => {};
 
-    const lenis = new Lenis({
-      lerp: 0.085,
-      smoothWheel: true,
-      syncTouch: true,
-      touchMultiplier: 1,
-      wheelMultiplier: 0.85,
-    });
+    const bindQuery = (query: MediaQueryList, listener: () => void) => {
+      if ("addEventListener" in query) {
+        query.addEventListener("change", listener);
+        return () => query.removeEventListener("change", listener);
+      }
 
-    const onScroll = () => ScrollTrigger.update();
-    const onTick = (time: number) => lenis.raf(time * 1000);
-    const onRefresh = () => lenis.resize();
+      query.addListener(listener);
+      return () => query.removeListener(listener);
+    };
 
-    lenis.on("scroll", onScroll);
-    gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(0);
-    ScrollTrigger.addEventListener("refresh", onRefresh);
+    const setup = () => {
+      cleanupCurrent();
+
+      if (reduceMotionQuery.matches || !finePointerQuery.matches) {
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+        cleanupCurrent = () => {};
+        return;
+      }
+
+      const lenis = new Lenis({
+        lerp: 0.11,
+        smoothWheel: true,
+        syncTouch: false,
+        touchMultiplier: 1,
+        wheelMultiplier: 0.9,
+      });
+
+      const onScroll = () => ScrollTrigger.update();
+      const onTick = (time: number) => lenis.raf(time * 1000);
+      const onRefresh = () => lenis.resize();
+
+      lenis.on("scroll", onScroll);
+      gsap.ticker.add(onTick);
+      gsap.ticker.lagSmoothing(0);
+      ScrollTrigger.addEventListener("refresh", onRefresh);
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      cleanupCurrent = () => {
+        ScrollTrigger.removeEventListener("refresh", onRefresh);
+        gsap.ticker.remove(onTick);
+        lenis.off("scroll", onScroll);
+        lenis.destroy();
+      };
+    };
+
+    const handleChange = () => setup();
+    const unbindReduce = bindQuery(reduceMotionQuery, handleChange);
+    const unbindPointer = bindQuery(finePointerQuery, handleChange);
+
+    setup();
 
     return () => {
-      ScrollTrigger.removeEventListener("refresh", onRefresh);
-      gsap.ticker.remove(onTick);
-      lenis.off("scroll", onScroll);
-      lenis.destroy();
+      unbindReduce();
+      unbindPointer();
+      cleanupCurrent();
     };
   }, []);
 

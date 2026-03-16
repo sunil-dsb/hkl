@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -26,7 +26,7 @@ export default function TextReveal({
 }: TextRevealProps) {
     const containerRef = useRef<HTMLParagraphElement>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
@@ -34,38 +34,50 @@ export default function TextReveal({
         if (wordEls.length === 0) return;
 
         const totalWords = wordEls.length;
+        const wordRanges = wordEls.map((_, i) => ({
+            start: i / totalWords,
+            end: (i / totalWords) + (overlap / totalWords),
+        }));
+        const opacitySetters = wordEls.map((el) => gsap.quickSetter(el, "opacity"));
 
-        // Set initial low-opacity state
-        for (const w of wordEls) w.style.opacity = String(baseOpacity);
+        for (const w of wordEls) {
+            w.style.opacity = String(baseOpacity);
+        }
 
         const scale = 1 / Math.min(
             1 + overlap / totalWords,
             1 + (totalWords - 1) / totalWords + overlap / totalWords
         );
 
+        for (let i = 0; i < wordRanges.length; i++) {
+            wordRanges[i].start *= scale;
+            wordRanges[i].end *= scale;
+        }
+
         const st = ScrollTrigger.create({
             trigger: container,
             start: "top 95%",
             end: "bottom 20%",
             scrub: 1.5,
+            invalidateOnRefresh: true,
             onUpdate: ({ progress }) => {
                 for (let i = 0; i < totalWords; i++) {
-                    const start = (i / totalWords) * scale;
-                    const end = start + (overlap / totalWords) * scale;
+                    const { start, end } = wordRanges[i];
                     const wp =
                         progress <= start ? 0
                             : progress >= end ? 1
                                 : (progress - start) / (end - start);
 
-                    // Linearly interpolate from baseOpacity → 1
-                    wordEls[i].style.opacity = String(baseOpacity + wp * (1 - baseOpacity));
+                    opacitySetters[i](baseOpacity + wp * (1 - baseOpacity));
                 }
             },
         });
 
         return () => {
             st.kill();
-            for (const w of wordEls) w.style.opacity = "";
+            for (const w of wordEls) {
+                w.style.opacity = "";
+            }
         };
     }, [baseOpacity, overlap]);
 

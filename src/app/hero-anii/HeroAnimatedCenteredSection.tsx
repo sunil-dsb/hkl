@@ -95,7 +95,7 @@ const aboutImageColumns = [
   [imagePool[3], imagePool[7], imagePool[11], imagePool[15]],
 ];
 
-const HeroAnimatedSection = () => {
+export default function HeroAnimatedCenteredSection() {
   const rootRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
   const heroMediaRef = useRef<HTMLDivElement>(null);
@@ -139,22 +139,6 @@ const HeroAnimatedSection = () => {
         height: viewport.height,
         borderRadius: 0,
       });
-    };
-
-    const headerParking = { y: 0 };
-
-    const computeHeaderParking = () => {
-      gsap.set(heroHeaderContent, {
-        y: 0,
-        scale: 1,
-        opacity: 1,
-        transformOrigin: "left top",
-      });
-
-      const rect = heroHeaderContent.getBoundingClientRect();
-      const targetTop =
-        window.innerWidth >= 1024 ? window.innerHeight * 0.165 : 64;
-      headerParking.y = targetTop - rect.top;
     };
 
     const aboutMotion = {
@@ -229,7 +213,6 @@ const HeroAnimatedSection = () => {
     };
 
     ScrollTrigger.addEventListener("refreshInit", applyHeroMediaBase);
-    ScrollTrigger.addEventListener("refreshInit", computeHeaderParking);
     ScrollTrigger.addEventListener("refreshInit", applyColumnOffsets);
 
     const ctx = gsap.context(() => {
@@ -256,12 +239,12 @@ const HeroAnimatedSection = () => {
 
       gsap.set(wordEls, { opacity: 0 });
       gsap.set(cta, { opacity: 0, y: 20 });
-      gsap.set(heroCopyLayer, { opacity: 1 });
+      gsap.set(heroCopyLayer, { opacity: 0 });
       gsap.set(heroHeaderContent, {
         y: 0,
         scale: 1,
         opacity: 1,
-        transformOrigin: "left top",
+        transformOrigin: "center top",
         force3D: true,
       });
       gsap.set(heroMedia, { force3D: true });
@@ -270,7 +253,6 @@ const HeroAnimatedSection = () => {
       );
       gsap.set(aboutColumns, { force3D: true });
       applyHeroMediaBase();
-      computeHeaderParking();
       applyColumnOffsets();
 
       ScrollTrigger.create({
@@ -286,9 +268,9 @@ const HeroAnimatedSection = () => {
         onUpdate: (self) => {
           const progress = self.progress;
 
-          const heroHeaderParkProgress = Math.max(
+          const heroHeaderOutProgress = Math.max(
             0,
-            Math.min(progress / 0.24, 1)
+            Math.min(progress / 0.29, 1)
           );
           const heroWordsProgress = Math.max(
             0,
@@ -306,38 +288,31 @@ const HeroAnimatedSection = () => {
             0,
             Math.min((progress - 0.48) / 0.12, 1)
           );
-          const heroHeaderExitProgress = Math.max(
-            0,
-            Math.min((progress - 0.68) / 0.14, 1)
-          );
           const heroMediaProgress = Math.max(
             0,
             Math.min((progress - 0.71) / 0.29, 1)
           );
           const heroHeaderScaleProgress = Math.max(
-            heroHeaderExitProgress * 0.45,
-            heroMediaProgress
+            heroHeaderOutProgress * 0.35,
+            heroMediaProgress * 0.2
           );
 
           const headerY = gsap.utils.interpolate(
             0,
-            headerParking.y,
-            heroHeaderParkProgress
+            -Math.min(viewport.height * 1.05, viewport.height + 120),
+            heroHeaderOutProgress
           );
 
           setHeaderY(headerY);
           setHeaderScale(
-            gsap.utils.interpolate(1, 0.8, heroHeaderScaleProgress)
+            gsap.utils.interpolate(1, 0.92, heroHeaderScaleProgress)
           );
-          setHeaderOpacity(1 - heroHeaderExitProgress);
+          setHeaderOpacity(1);
 
           wordRanges.forEach(({ start, end }, index) => {
             const wordOpacity = Math.max(
               0,
-              Math.min(
-                (heroWordsProgress - start) / (end - start),
-                1
-              )
+              Math.min((heroWordsProgress - start) / (end - start), 1)
             );
 
             setWordOpacity[index](wordOpacity);
@@ -357,7 +332,11 @@ const HeroAnimatedSection = () => {
             150,
             heroMediaProgress
           );
-          const heroMediaRadius = gsap.utils.interpolate(0, 10, heroMediaProgress);
+          const heroMediaRadius = gsap.utils.interpolate(
+            0,
+            10,
+            heroMediaProgress
+          );
 
           setMediaWidth(heroMediaWidth);
           setMediaHeight(heroMediaHeight);
@@ -387,7 +366,6 @@ const HeroAnimatedSection = () => {
 
     return () => {
       ScrollTrigger.removeEventListener("refreshInit", applyHeroMediaBase);
-      ScrollTrigger.removeEventListener("refreshInit", computeHeaderParking);
       ScrollTrigger.removeEventListener("refreshInit", applyColumnOffsets);
       ctx.revert();
     };
@@ -419,19 +397,17 @@ const HeroAnimatedSection = () => {
             />
           </video>
 
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/15" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/30" />
         </div>
 
-        <div
-          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white sm:px-8 sm:py-8 lg:px-16 lg:py-14 will-change-transform"
-        >
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 py-14 text-white sm:px-8 lg:px-16">
           <div
             ref={heroHeaderContentRef}
-            className="w-full origin-top-left will-change-[transform,opacity]"
+            className="w-full max-w-5xl origin-top text-center will-change-[transform,opacity]"
           >
-            <h1 className="w-full max-w-[13ch] text-left font-hkl text-[2.65rem] font-semibold leading-[1.02] tracking-tight sm:text-[3rem] lg:max-w-none lg:w-[75%] lg:text-[4.7rem]">
-              Start your day with <br className="hidden lg:block" />
+            <h1 className="mx-auto max-w-3xl text-center font-hkl text-[2.2rem] font-semibold leading-[0.98] tracking-tight sm:max-w-[15.75ch] sm:text-[2.95rem] lg:max-w-4xl lg:text-[4.5rem]">
+              Start your day with{" "}
               <span className="font-playfair font-light italic text-mint">
                 Humility
               </span>
@@ -450,13 +426,13 @@ const HeroAnimatedSection = () => {
 
         <div
           ref={heroCopyLayerRef}
-          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white sm:px-8 sm:py-8 lg:px-16 lg:py-14"
+          className="absolute inset-0 z-10 flex items-center justify-center px-6 py-14 text-white sm:px-8 lg:px-16"
           style={{ opacity: 0 }}
         >
-          <div className="w-full space-y-6 md:space-y-8">
+          <div className="w-full max-w-4xl space-y-7 text-center md:space-y-9">
             <p
               ref={subtitleTextRef}
-              className="w-full max-w-[19rem] text-left text-[0.98rem] font-extralight leading-[1.18] tracking-[-0.015em] text-white/88 sm:max-w-[25rem] sm:text-[1.08rem] lg:max-w-none lg:w-[46%] lg:text-[1.68rem]"
+              className="mx-auto max-w-[23rem] text-center text-[1rem] font-extralight leading-[1.22] tracking-[-0.015em] text-white/88 sm:max-w-[31rem] sm:text-[1.15rem] lg:max-w-[46rem] lg:text-[1.9rem]"
             >
               {heroCopyWords.map((word, index) => (
                 <span
@@ -472,7 +448,7 @@ const HeroAnimatedSection = () => {
 
             <div
               ref={ctaRef}
-              className="flex flex-wrap items-center justify-start gap-4"
+              className="flex flex-wrap items-center justify-center gap-4"
               style={{ opacity: 0, transform: "translateY(20px)" }}
             >
               <button className="btn-mint flex gap-3 px-6 py-4">
@@ -498,7 +474,9 @@ const HeroAnimatedSection = () => {
               ref={(node) => {
                 aboutColumnRefs.current[columnIndex] = node;
               }}
-              className={`relative h-[104%] flex-col justify-around will-change-transform sm:h-[108%] md:flex lg:h-[125%] ${columnIndex === 1 || columnIndex === 2 ? "hidden" : "flex"}`}
+              className={`relative h-[104%] flex-col justify-around will-change-transform sm:h-[108%] md:flex lg:h-[125%] ${
+                columnIndex === 1 || columnIndex === 2 ? "hidden" : "flex"
+              }`}
             >
               {column.map((image, imageIndex) => (
                 <div
@@ -540,6 +518,4 @@ const HeroAnimatedSection = () => {
       </section>
     </div>
   );
-};
-
-export default HeroAnimatedSection;
+}

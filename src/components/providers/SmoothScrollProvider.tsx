@@ -7,6 +7,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+type LegacyMediaQueryList = MediaQueryList & {
+  addListener?: (
+    listener: (event: MediaQueryListEvent) => void
+  ) => void;
+  removeListener?: (
+    listener: (event: MediaQueryListEvent) => void
+  ) => void;
+};
+
 export default function SmoothScrollProvider({
   children,
 }: {
@@ -21,14 +30,22 @@ export default function SmoothScrollProvider({
     );
     let cleanupCurrent = () => {};
 
-    const bindQuery = (query: MediaQueryList, listener: () => void) => {
-      if ("addEventListener" in query) {
+    const bindQuery = (
+      query: MediaQueryList,
+      listener: (event?: MediaQueryListEvent) => void
+    ) => {
+      if (typeof query.addEventListener === "function") {
         query.addEventListener("change", listener);
         return () => query.removeEventListener("change", listener);
       }
 
-      query.addListener(listener);
-      return () => query.removeListener(listener);
+      const legacyQuery = query as LegacyMediaQueryList;
+
+      legacyQuery.addListener?.(listener as (event: MediaQueryListEvent) => void);
+      return () =>
+        legacyQuery.removeListener?.(
+          listener as (event: MediaQueryListEvent) => void
+        );
     };
 
     const setup = () => {

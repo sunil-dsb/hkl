@@ -1,4 +1,5 @@
 import FooterBirds from "./FooterBirds";
+import HoverButton from "@/components/ui/HoverButton";
 
 export default function FooterCta() {
     return (
@@ -13,9 +14,7 @@ export default function FooterCta() {
                     Simple steps towards a kinder, lovable world. Nurturing a future where nature and humanity thrive together.
                 </p>
             </div>
-            <button className="btn-primary z-20 relative">
-                Start Journey
-            </button>
+            <HoverButton variant="primary" className="z-20">Start Journey</HoverButton>
         </section>
     );
 }

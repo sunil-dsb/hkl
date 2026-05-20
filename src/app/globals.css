@@ -153,4 +153,163 @@ html {
   .btn-mint {
     @apply cursor-pointer leading-none inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap rounded-full active:scale-95 px-6 py-4 bg-mint text-primary-950 hover:bg-mint/90 focus-visible:ring-mint text-lg shadow-lg hover:shadow-xl;
   }
+
+  /* Layered hover button (clip-path reveal in two stages) */
+  .hover-btn {
+    --hb-color: var(--color-primary-950);
+    --hb-bg: var(--color-mint);
+    --hb-hover-color: var(--color-mint);
+    --hb-between-bg: var(--color-olive);
+    --hb-hover-bg: var(--color-dark-forest);
+    --hb-radius: 9999px;
+    --hb-padding: 1rem 1.5rem;
+    --hb-text-size: 1.125rem;
+    --hb-click-scale: 0.955 0.925;
+    --hb-ease-click: cubic-bezier(0.4, 0, 0.2, 1);
+    --hb-ease-hover: cubic-bezier(0.19, 0.69, 0.33, 1.33);
+    --hb-ease-swift-out: cubic-bezier(0.19, 0.69, 0.33, 1);
+    --hb-ease-soft-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --hb-ease-focus: cubic-bezier(0.32, 0.72, 0, 1);
+
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    place-items: center;
+    padding: 0;
+    line-height: 1;
+    font-weight: 500;
+    font-size: var(--hb-text-size);
+    color: var(--hb-color);
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s var(--hb-ease-soft-out), scale 0.15s var(--hb-ease-click);
+  }
+
+  .hover-btn[data-variant="primary"] {
+    --hb-color: var(--color-primary-50);
+    --hb-bg: var(--color-primary-950);
+    --hb-hover-color: var(--color-dark-forest);
+    --hb-between-bg: var(--color-olive);
+    --hb-hover-bg: var(--color-mint);
+    --hb-text-size: 1rem;
+    --hb-padding: 0.75rem 1.25rem;
+  }
+
+  .hover-btn::after {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: -0.125em;
+    border-radius: var(--hb-radius);
+    transition: box-shadow 0.3s var(--hb-ease-focus);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hover-btn:focus-visible::after {
+    box-shadow: 0 0 0 0.125em var(--hb-color);
+  }
+
+  .hover-btn:active {
+    scale: var(--hb-click-scale);
+  }
+
+  .hover-btn__bg {
+    background-color: var(--hb-bg);
+    border-radius: var(--hb-radius);
+    grid-area: 1 / 1;
+    width: calc(100% - 1px);
+    height: calc(100% - 1px);
+    padding: 0;
+  }
+
+  .hover-btn__bg-hover {
+    border-radius: var(--hb-radius);
+    will-change: transform, clip-path;
+    grid-area: 1 / 1;
+    width: calc(100% + 0.25em);
+    height: calc(100% + 0.25em);
+    padding: 0;
+    clip-path: inset(1.25em 1.25em 1.25em 1.25em round var(--hb-radius));
+    opacity: 0;
+  }
+
+  .hover-btn__bg-hover.is--first {
+    background-color: var(--hb-between-bg);
+    z-index: 1;
+    transition: clip-path 0.35s var(--hb-ease-hover), opacity 0s var(--hb-ease-soft-out);
+  }
+
+  .hover-btn__bg-hover.is--second {
+    background-color: var(--hb-hover-bg);
+    z-index: 2;
+    transition: clip-path 0.35s 0.05s var(--hb-ease-hover), opacity 0.1s 0.1s var(--hb-ease-soft-out);
+  }
+
+  .hover-btn__text {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: var(--hb-padding);
+    z-index: 3;
+    grid-area: 1 / 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .hover-btn:hover,
+    .hover-btn:focus-visible {
+      color: var(--hb-hover-color);
+      transition: color 0.15s 0.2s var(--hb-ease-soft-out), scale 0.15s var(--hb-ease-click);
+    }
+
+    .hover-btn:hover .hover-btn__bg-hover.is--first,
+    .hover-btn:focus-visible .hover-btn__bg-hover.is--first {
+      clip-path: inset(0.125em 0.125em 0.125em 0.125em round var(--hb-radius));
+      opacity: 1;
+      transition: clip-path 0.3s 0.05s var(--hb-ease-swift-out), opacity 0.1s 0.05s var(--hb-ease-soft-out);
+    }
+
+    .hover-btn:hover .hover-btn__bg-hover.is--second,
+    .hover-btn:focus-visible .hover-btn__bg-hover.is--second {
+      clip-path: inset(0.125em 0.125em 0.125em 0.125em round var(--hb-radius));
+      opacity: 1;
+      transition: clip-path 0.375s 0.2s var(--hb-ease-hover), opacity 0.1s 0.2s var(--hb-ease-soft-out);
+    }
+  }
+
+}
+
+/* Sticky Virtues – desktop-only active/before/after transitions (outside @layer for reliable cascade) */
+@media (min-width: 1024px) {
+  [data-sticky-steps-item] .sticky-virtue-visual {
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    opacity: 0;
+    visibility: hidden;
+    will-change: opacity;
+  }
+  [data-sticky-steps-item][data-sticky-steps-item-status="before"] .sticky-virtue-visual,
+  [data-sticky-steps-item][data-sticky-steps-item-status="active"] .sticky-virtue-visual {
+    opacity: 1;
+    visibility: visible;
+  }
+  [data-sticky-steps-item] .sticky-virtue-text {
+    transition: opacity 0.5s ease;
+    opacity: 0.12;
+    will-change: opacity;
+  }
+  [data-sticky-steps-item][data-sticky-steps-item-status="active"] .sticky-virtue-text {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-sticky-steps-item] .sticky-virtue-visual,
+  [data-sticky-steps-item] .sticky-virtue-text {
+    transition: none !important;
+  }
 }

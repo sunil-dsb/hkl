@@ -15,13 +15,13 @@ const navLinks = [
     "About", "Canada, 2025", "Italy, 2025", "India, 2024", "Stories", "Volunteer", "Support Us"
 ];
 
-export default function Footer() {
+export default function Footer({ imageSrc = "/3.svg" }: { imageSrc?: string } = {}) {
     return (
         <footer className="-mt-42 md:-mt-32 relative z-10 pointer-events-none">
             {/* Mountain Image */}
             <section className="relative w-full min-h-[80vh] md:min-h-[75vh] pointer-events-auto">
                 <Image
-                    src="/3.svg"
+                    src={imageSrc}
                     alt="HKL Landscape"
                     fill
                     className="object-cover object-bottom"

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import BoxReveal, { BOX_COLORS } from "@/components/ui/BoxReveal";
+import HoverButton from "@/components/ui/HoverButton";
 import ParallaxBranch from "@/components/ui/ParallaxBranch";
 
 const images = [
@@ -66,9 +67,7 @@ export default function AboutSection() {
                         <div className="max-w-md mx-auto space-y-8">
                             <BoxReveal paragraphs={aboutParagraphs} boxColor={BOX_COLORS.mint} />
                             <div className="flex justify-center pt-6">
-                                <button className="btn-primary">
-                                    Begin Practice
-                                </button>
+                                <HoverButton variant="primary">Begin Practice</HoverButton>
                             </div>
                         </div>
                     </div>
@@ -86,9 +85,7 @@ export default function AboutSection() {
                     <div className="max-w-xl mx-auto space-y-8 text-center px-4">
                         <BoxReveal paragraphs={aboutParagraphs} boxColor={BOX_COLORS.mint} />
                         <div className="flex justify-center">
-                            <button className="btn-primary w-full sm:w-auto">
-                                Begin Practice
-                            </button>
+                            <HoverButton variant="primary" className="w-full sm:w-auto">Begin Practice</HoverButton>
                         </div>
                     </div>
 

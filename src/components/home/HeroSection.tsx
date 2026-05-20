@@ -1,4 +1,5 @@
 import { RxArrowTopRight } from "react-icons/rx";
+import HoverButton from "@/components/ui/HoverButton";
 export default function HeroSection() {
     return (
         <section className="relative w-full h-[90vh] sm:h-[110vh] min-h-160 bg-black overflow-hidden">
@@ -38,9 +39,7 @@ export default function HeroSection() {
                     </p>
 
                     <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-                        <button className="btn-mint flex gap-3">
-                            Start My Morning
-                        </button>
+                        <HoverButton variant="mint">Start My Morning</HoverButton>
                         <button className="btn flex gap-3 px-6 py-4 bg-white/10 text-white border border-white/30 hover:bg-white/20 focus-visible:ring-white text-lg backdrop-blur-sm">
                             Learn More
                             <RxArrowTopRight className="text-md" aria-hidden="true" />

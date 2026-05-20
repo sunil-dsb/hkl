@@ -6,6 +6,7 @@ import { RxArrowTopRight } from "react-icons/rx";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BoxReveal, { BOX_COLORS } from "@/components/ui/BoxReveal";
+import HoverButton from "@/components/ui/HoverButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -130,15 +131,14 @@ const HeroAnimatedSection = () => {
     }
 
     const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const heroMediaFinalScale = {
+      value: 150 / Math.max(window.innerWidth, window.innerHeight),
+    };
     const applyHeroMediaBase = () => {
       viewport.width = window.innerWidth;
       viewport.height = window.innerHeight;
-
-      gsap.set(heroMedia, {
-        width: viewport.width,
-        height: viewport.height,
-        borderRadius: 0,
-      });
+      heroMediaFinalScale.value =
+        150 / Math.max(viewport.width, viewport.height);
     };
 
     const headerParking = { y: 0 };
@@ -158,27 +158,26 @@ const HeroAnimatedSection = () => {
     };
 
     const aboutMotion = {
-      targets: [-500, -250, -250, -500] as number[],
+      xTargets: [0, 0, 0, 0] as number[],
+      yTargets: [-500, -250, -250, -500] as number[],
     };
 
     const getAboutMotion = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      if (width < 640) {
+      // Mobile + small tablet: 2 horizontal rows (top + bottom). Horizontal drift parallax.
+      if (width < 768) {
+        const drift = Math.min(width * 0.08, 32);
         return {
           initial: [
-            { x: 0, y: Math.min(height * 0.34, 280) },
-            { x: -24, y: Math.min(height * 0.18, 140) },
-            { x: 24, y: Math.min(height * 0.18, 140) },
-            { x: 0, y: Math.min(height * 0.34, 280) },
+            { x: -drift, y: 0 },
+            { x: 0, y: 0 },
+            { x: 0, y: 0 },
+            { x: drift, y: 0 },
           ],
-          targets: [
-            -Math.min(height * 0.14, 115),
-            -Math.min(height * 0.08, 60),
-            -Math.min(height * 0.08, 60),
-            -Math.min(height * 0.14, 115),
-          ],
+          xTargets: [drift, 0, 0, -drift],
+          yTargets: [0, 0, 0, 0],
         };
       }
 
@@ -190,7 +189,8 @@ const HeroAnimatedSection = () => {
             { x: 90, y: Math.min(height * 0.34, 320) },
             { x: 0, y: Math.min(height * 0.58, 560) },
           ],
-          targets: [
+          xTargets: [0, -90, 90, 0],
+          yTargets: [
             -Math.min(height * 0.28, 260),
             -Math.min(height * 0.17, 160),
             -Math.min(height * 0.17, 160),
@@ -206,7 +206,8 @@ const HeroAnimatedSection = () => {
           { x: 225, y: 500 },
           { x: 0, y: 1000 },
         ],
-        targets: [-500, -250, -250, -500],
+        xTargets: [0, -225, 225, 0],
+        yTargets: [-500, -250, -250, -500],
       };
     };
 
@@ -214,7 +215,8 @@ const HeroAnimatedSection = () => {
       const columns = aboutColumnRefs.current;
       const motion = getAboutMotion();
 
-      aboutMotion.targets = motion.targets;
+      aboutMotion.xTargets = motion.xTargets;
+      aboutMotion.yTargets = motion.yTargets;
 
       columns.forEach((column, index) => {
         if (!column) {
@@ -250,13 +252,12 @@ const HeroAnimatedSection = () => {
       const setCopyOpacity = gsap.quickSetter(heroCopyLayer, "opacity");
       const setCtaOpacity = gsap.quickSetter(cta, "opacity");
       const setCtaY = gsap.quickSetter(cta, "y", "px");
-      const setMediaWidth = gsap.quickSetter(heroMedia, "width", "px");
-      const setMediaHeight = gsap.quickSetter(heroMedia, "height", "px");
-      const setMediaRadius = gsap.quickSetter(heroMedia, "borderRadius", "px");
+      const setMediaScaleX = gsap.quickSetter(heroMedia, "scaleX");
+      const setMediaScaleY = gsap.quickSetter(heroMedia, "scaleY");
 
       gsap.set(wordEls, { opacity: 0 });
       gsap.set(cta, { opacity: 0, y: 20 });
-      gsap.set(heroCopyLayer, { opacity: 1 });
+      gsap.set(heroCopyLayer, { opacity: 0 });
       gsap.set(heroHeaderContent, {
         y: 0,
         scale: 1,
@@ -264,7 +265,14 @@ const HeroAnimatedSection = () => {
         transformOrigin: "left top",
         force3D: true,
       });
-      gsap.set(heroMedia, { force3D: true });
+      gsap.set(heroMedia, {
+        xPercent: -50,
+        yPercent: -50,
+        scaleX: 1,
+        scaleY: 1,
+        transformOrigin: "50% 50%",
+        force3D: true,
+      });
       const aboutColumns = aboutColumnRefs.current.filter(
         (column): column is HTMLDivElement => column !== null
       );
@@ -280,8 +288,7 @@ const HeroAnimatedSection = () => {
         pin: true,
         pinSpacing: false,
         anticipatePin: 1,
-        fastScrollEnd: true,
-        scrub: 1,
+        scrub: 0.5,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           const progress = self.progress;
@@ -319,49 +326,25 @@ const HeroAnimatedSection = () => {
             heroMediaProgress
           );
 
-          const headerY = gsap.utils.interpolate(
-            0,
-            headerParking.y,
-            heroHeaderParkProgress
-          );
-
-          setHeaderY(headerY);
-          setHeaderScale(
-            gsap.utils.interpolate(1, 0.8, heroHeaderScaleProgress)
-          );
+          setHeaderY(headerParking.y * heroHeaderParkProgress);
+          setHeaderScale(1 - 0.2 * heroHeaderScaleProgress);
           setHeaderOpacity(1 - heroHeaderExitProgress);
 
-          wordRanges.forEach(({ start, end }, index) => {
-            const wordOpacity = Math.max(
-              0,
-              Math.min(
-                (heroWordsProgress - start) / (end - start),
-                1
-              )
-            );
-
-            setWordOpacity[index](wordOpacity);
-          });
+          for (let i = 0; i < wordRanges.length; i++) {
+            const { start, end } = wordRanges[i];
+            const raw = (heroWordsProgress - start) / (end - start);
+            const wordOpacity = raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
+            setWordOpacity[i](wordOpacity);
+          }
 
           setCopyOpacity(heroCopyAppearProgress * (1 - heroCopyFade));
           setCtaOpacity(ctaProgress * (1 - heroCopyFade));
           setCtaY(20 * (1 - ctaProgress));
 
-          const heroMediaWidth = gsap.utils.interpolate(
-            viewport.width,
-            150,
-            heroMediaProgress
-          );
-          const heroMediaHeight = gsap.utils.interpolate(
-            viewport.height,
-            150,
-            heroMediaProgress
-          );
-          const heroMediaRadius = gsap.utils.interpolate(0, 10, heroMediaProgress);
-
-          setMediaWidth(heroMediaWidth);
-          setMediaHeight(heroMediaHeight);
-          setMediaRadius(heroMediaRadius);
+          const mediaScale =
+            1 + (heroMediaFinalScale.value - 1) * heroMediaProgress;
+          setMediaScaleX(mediaScale);
+          setMediaScaleY(mediaScale);
         },
       });
 
@@ -371,14 +354,14 @@ const HeroAnimatedSection = () => {
         }
 
         gsap.to(column, {
-          y: () => aboutMotion.targets[index],
+          x: () => aboutMotion.xTargets[index],
+          y: () => aboutMotion.yTargets[index],
           ease: "none",
           scrollTrigger: {
             trigger: aboutSection,
-            start: "top 92%",
-            end: "bottom 8%",
-            scrub: 0.9,
-            fastScrollEnd: true,
+            start: "top 70%",
+            end: "bottom 20%",
+            scrub: 0.5,
             invalidateOnRefresh: true,
           },
         });
@@ -401,7 +384,7 @@ const HeroAnimatedSection = () => {
       >
         <div
           ref={heroMediaRef}
-          className="absolute left-1/2 top-1/2 z-0 h-[100svh] w-screen -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-black will-change-[width,height,border-radius]"
+          className="absolute left-1/2 top-1/2 z-0 h-[100svh] w-screen overflow-hidden bg-black will-change-transform"
         >
           <video
             className="absolute inset-0 h-full w-full object-cover"
@@ -424,7 +407,7 @@ const HeroAnimatedSection = () => {
         </div>
 
         <div
-          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white sm:px-8 sm:py-8 lg:px-16 lg:py-14 will-change-transform"
+          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white sm:px-8 sm:py-8 lg:px-16 lg:py-14"
         >
           <div
             ref={heroHeaderContentRef}
@@ -450,7 +433,7 @@ const HeroAnimatedSection = () => {
 
         <div
           ref={heroCopyLayerRef}
-          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white sm:px-8 sm:py-8 lg:px-16 lg:py-14"
+          className="absolute inset-0 z-10 flex items-end px-6 py-8 text-white will-change-[opacity] sm:px-8 sm:py-8 lg:px-16 lg:py-14"
           style={{ opacity: 0 }}
         >
           <div className="w-full space-y-6 md:space-y-8">
@@ -472,12 +455,10 @@ const HeroAnimatedSection = () => {
 
             <div
               ref={ctaRef}
-              className="flex flex-wrap items-center justify-start gap-4"
+              className="flex flex-wrap items-center justify-start gap-4 will-change-[transform,opacity]"
               style={{ opacity: 0, transform: "translateY(20px)" }}
             >
-              <button className="btn-mint flex gap-3 px-6 py-4">
-                Start My Morning
-              </button>
+              <HoverButton variant="mint">Start My Morning</HoverButton>
               <button className="btn flex gap-3 border border-white/30 bg-white/10 px-6 py-4 text-lg text-white backdrop-blur-sm hover:bg-white/20 focus-visible:ring-white">
                 Learn More
                 <RxArrowTopRight className="text-lg" aria-hidden="true" />
@@ -489,16 +470,22 @@ const HeroAnimatedSection = () => {
 
       <section
         ref={aboutSectionRef}
-        className="relative mt-[275svh] min-h-[136svh] w-full overflow-hidden bg-primary-100 sm:min-h-[130svh] md:min-h-[118svh] lg:h-[100svh] lg:min-h-0"
+        className="relative z-20 mt-[250svh] flex min-h-screen w-full items-center overflow-hidden bg-primary-100 py-36 contain-[paint] sm:py-40 md:py-28 lg:py-32"
       >
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-3 py-10 sm:px-5 md:px-8 lg:px-14 lg:py-16">
-          {aboutImageColumns.map((column, columnIndex) => (
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-stretch justify-between px-4 py-10 sm:px-6 sm:py-12 md:flex-row md:items-center md:px-8 lg:px-14 lg:py-16">
+          {aboutImageColumns.map((column, columnIndex) => {
+            const hiddenOnMobile = columnIndex === 1 || columnIndex === 2;
+            return (
             <div
               key={`about-col-${columnIndex}`}
               ref={(node) => {
                 aboutColumnRefs.current[columnIndex] = node;
               }}
-              className={`relative h-[104%] flex-col justify-around will-change-transform sm:h-[108%] md:flex lg:h-[125%] ${columnIndex === 1 || columnIndex === 2 ? "hidden" : "flex"}`}
+              className={`relative items-center justify-around will-change-transform ${
+                hiddenOnMobile
+                  ? "hidden"
+                  : "flex flex-row gap-3 sm:gap-4"
+              } md:flex md:h-[108%] md:flex-col md:gap-0 md:justify-around lg:h-[125%]`}
             >
               {column.map((image, imageIndex) => (
                 <div
@@ -517,10 +504,11 @@ const HeroAnimatedSection = () => {
                 </div>
               ))}
             </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[136svh] w-full max-w-[24rem] items-center justify-center px-6 py-24 sm:min-h-[130svh] sm:max-w-[28rem] md:min-h-[118svh] md:max-w-[31rem] lg:absolute lg:left-1/2 lg:top-1/2 lg:min-h-0 lg:w-[40%] lg:max-w-xl lg:-translate-x-1/2 lg:-translate-y-1/2 lg:px-6 lg:py-0">
+        <div className="relative z-10 mx-auto w-full max-w-[24rem] px-6 sm:max-w-[28rem] md:max-w-[31rem] lg:w-[40%] lg:max-w-xl lg:px-6">
           <div className="space-y-8">
             <BoxReveal
               paragraphs={aboutParagraphs}
@@ -533,7 +521,7 @@ const HeroAnimatedSection = () => {
               overlap={10}
             />
             <div className="flex justify-center pt-4">
-              <button className="btn-primary">Begin Practice</button>
+              <HoverButton variant="primary">Begin Practice</HoverButton>
             </div>
           </div>
         </div>

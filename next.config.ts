@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'app.circle.so',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets-v2.circle.so',
+      },
+      {
+        protocol: 'https',
+        hostname: 'photos.smugmug.com',
+      },
     ],
   },
 };

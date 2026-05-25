@@ -313,3 +313,106 @@ html {
     transition: none !important;
   }
 }
+
+/* Lotus flower — pink blooming petals (used in the welcome popup).
+   Always-on calm breathing animation. Each petal scales + lifts outward
+   with staggered delays so the flower ripples like a slow breath. */
+.flower {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: lotusBreath 18s ease-in-out infinite;
+}
+
+.flower .petal {
+  --angle: 0deg;
+  position: absolute;
+  width: 28px;
+  height: 48px;
+  background: linear-gradient(180deg, #ffe4ee 0%, #ff9ec2 35%, #ff1474 100%);
+  border-radius: 50%;
+  transform: rotate(var(--angle)) translateY(-50%);
+  animation: petalSway 12s ease-in-out infinite;
+}
+
+.flower .petal1 { --angle: 0deg;   animation-delay: 0s;   }
+.flower .petal2 { --angle: 45deg;  animation-delay: 0.6s; }
+.flower .petal3 { --angle: 90deg;  animation-delay: 1.2s; }
+.flower .petal4 { --angle: 135deg; animation-delay: 1.8s; }
+.flower .petal5 { --angle: 180deg; animation-delay: 2.4s; }
+.flower .petal6 { --angle: 225deg; animation-delay: 1.8s; }
+.flower .petal7 { --angle: 270deg; animation-delay: 1.2s; }
+.flower .petal8 { --angle: 315deg; animation-delay: 0.6s; }
+
+.flower .flower-center {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 50% 45%, #fff7e0 0%, #ffd87a 70%, #f5b840 100%);
+  border-radius: 50%;
+}
+
+@keyframes lotusBreath {
+  0%   { transform: scale(1)    rotate(0deg); }
+  50%  { transform: scale(1.06) rotate(180deg); }
+  100% { transform: scale(1)    rotate(360deg); }
+}
+
+@keyframes petalSway {
+  0%, 100% {
+    transform: rotate(var(--angle)) translateY(-50%) scale(1);
+    background: linear-gradient(180deg, #ffe4ee 0%, #ff9ec2 35%, #ff1474 100%);
+  }
+  50% {
+    transform: rotate(calc(var(--angle) + 3deg)) translateY(-60%) scale(1.09);
+    background: linear-gradient(180deg, #ffe9f1 0%, #ffa8c9 35%, #ff2d85 100%);
+  }
+}
+
+/* Light rays — soft morning shimmer (opacity + subtle scale breathe).
+   Right rays pivot from top-right and tilt slightly counter-clockwise,
+   left rays mirror them — both leaning inward toward the lotus. */
+.lotus-rays {
+  transform-origin: top right;
+  animation: raysShimmerRight 9s ease-in-out infinite;
+}
+
+.lotus-rays-left {
+  transform-origin: top left;
+  animation: raysShimmerLeft 9s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes raysShimmerRight {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) rotate(-2deg);
+  }
+}
+
+@keyframes raysShimmerLeft {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flower,
+  .flower .petal,
+  .lotus-rays,
+  .lotus-rays-left {
+    animation: none;
+  }
+}

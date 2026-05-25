@@ -3,6 +3,8 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
+  createContext,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -56,6 +58,51 @@ import {
 
 const AVATAR_URL =
   "https://framerusercontent.com/images/VZE7xHznRZSutJsYss9WpfKUgOU.png?scale-down-to=512&width=1172&height=980";
+
+/* ────────────────────────────────────────────────────────────
+   Navigation context — powers PlayPhone interactive prototype
+   ──────────────────────────────────────────────────────────── */
+
+type ScreenKey =
+  | "splash"
+  | "quote"
+  | "auth"
+  | "otp"
+  | "blank-home"
+  | "lotus-popup"
+  | "tour-practice"
+  | "tour-feed"
+  | "tour-channels"
+  | "tour-you"
+  | "save-profile"
+  | "home-feed"
+  | "post-detail"
+  | "daily-commitment"
+  | "chat"
+  | "dm-thread"
+  | "new-message"
+  | "alerts"
+  | "events"
+  | "event-detail"
+  | "spaces"
+  | "member-profile"
+  | "say-hello"
+  | "community-guidelines"
+  | "about-hkl"
+  | "heartalks"
+  | "resources";
+
+type NavContextValue = {
+  navigate: (screen: ScreenKey) => void;
+  back: () => void;
+  current: ScreenKey;
+};
+
+const NavContext = createContext<NavContextValue | null>(null);
+
+function useNav(): NavContextValue | null {
+  return useContext(NavContext);
+}
 
 /* ────────────────────────────────────────────────────────────
    Phone shell + chrome
@@ -185,7 +232,15 @@ function IconBell(props: { className?: string }) {
 
 type Tab = "feed" | "practice" | "chat" | "alerts";
 
+const TAB_TO_SCREEN: Record<Tab, ScreenKey> = {
+  feed: "home-feed",
+  practice: "daily-commitment",
+  chat: "chat",
+  alerts: "alerts",
+};
+
 function BottomNav({ active, spotlight }: { active?: Tab; spotlight?: Tab }) {
+  const nav = useNav();
   const items: {
     id: Tab;
     label: string;
@@ -202,8 +257,10 @@ function BottomNav({ active, spotlight }: { active?: Tab; spotlight?: Tab }) {
         const isSpotlight = spotlight === id;
         const isActive = active === id;
         return (
-          <div
+          <button
             key={id}
+            type="button"
+            onClick={() => nav?.navigate(TAB_TO_SCREEN[id])}
             className={`flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-1 transition ${
               isSpotlight
                 ? "bg-primary-100 ring-4 ring-primary-100"
@@ -232,7 +289,7 @@ function BottomNav({ active, spotlight }: { active?: Tab; spotlight?: Tab }) {
             >
               {label}
             </span>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -349,12 +406,16 @@ function LanguageDropdown() {
 function PrimaryButton({
   children,
   full = false,
+  onClick,
 }: {
   children: ReactNode;
   full?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
+      type="button"
+      onClick={onClick}
       className={`${full ? "w-full" : "w-fit"} rounded-full bg-dark-forest px-6 py-3 font-hkl-centra text-sm font-medium text-white transition hover:bg-olive active:scale-95`}
     >
       {children}
@@ -367,8 +428,18 @@ function PrimaryButton({
    ──────────────────────────────────────────────────────────── */
 
 function ScreenSplash() {
+  const nav = useNav();
+  useEffect(() => {
+    if (!nav) return;
+    const id = setTimeout(() => nav.navigate("quote"), 1800);
+    return () => clearTimeout(id);
+  }, [nav]);
   return (
-    <div className="flex h-full w-full flex-col bg-[#F9FAF3]">
+    <button
+      type="button"
+      onClick={() => nav?.navigate("quote")}
+      className="flex h-full w-full flex-col bg-[#F9FAF3] text-left"
+    >
       <StatusBar />
       <div className="flex flex-1 flex-col items-center justify-center">
         <Image
@@ -384,7 +455,7 @@ function ScreenSplash() {
         </p>
       </div>
       <HomeIndicator />
-    </div>
+    </button>
   );
 }
 
@@ -450,6 +521,7 @@ const QUOTE_SLIDES = [
    ──────────────────────────────────────────────────────────── */
 
 function ScreenQuote() {
+  const nav = useNav();
   return (
     <div className="flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -488,8 +560,14 @@ function ScreenQuote() {
 
       {/* Bottom CTA */}
       <div className="mt-auto px-5 pb-6">
-        <PrimaryButton full>Get Started</PrimaryButton>
-        <button className="mt-3 w-full text-center font-outfit text-[11px] text-primary-500">
+        <PrimaryButton full onClick={() => nav?.navigate("auth")}>
+          Get Started
+        </PrimaryButton>
+        <button
+          type="button"
+          onClick={() => nav?.navigate("auth")}
+          className="mt-3 w-full text-center font-outfit text-[11px] text-primary-500"
+        >
           Already a member?{" "}
           <span className="font-medium text-primary-700">Sign in</span>
         </button>
@@ -505,6 +583,7 @@ function ScreenQuote() {
    ──────────────────────────────────────────────────────────── */
 
 function ScreenAuth() {
+  const nav = useNav();
   const usLang: Language = {
     code: "US",
     name: "United States",
@@ -535,7 +614,9 @@ function ScreenAuth() {
         </div>
 
         <div className="mt-auto space-y-3.5">
-          <PrimaryButton full>Send code</PrimaryButton>
+          <PrimaryButton full onClick={() => nav?.navigate("otp")}>
+            Send code
+          </PrimaryButton>
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-primary-200" />
             <span className="font-hkl-centra text-[10px] uppercase tracking-widest text-primary-400">
@@ -543,7 +624,11 @@ function ScreenAuth() {
             </span>
             <div className="h-px flex-1 bg-primary-200" />
           </div>
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-primary-100 bg-white px-6 py-2.5 font-hkl-centra text-[13px] font-medium text-primary-700 transition hover:border-primary-200 active:scale-95">
+          <button
+            type="button"
+            onClick={() => nav?.navigate("save-profile")}
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-primary-100 bg-white px-6 py-2.5 font-hkl-centra text-[13px] font-medium text-primary-700 transition hover:border-primary-200 active:scale-95"
+          >
             <Image
               src="/google.svg"
               alt="Google"
@@ -576,6 +661,7 @@ function ScreenAuth() {
    ──────────────────────────────────────────────────────────── */
 
 function ScreenOtp() {
+  const nav = useNav();
   const digits = ["7", "3", "9", "", "", ""];
   return (
     <div className="flex h-full w-full flex-col bg-white">
@@ -621,7 +707,9 @@ function ScreenOtp() {
         </p>
 
         <div className="mt-auto flex">
-          <PrimaryButton full>Verify</PrimaryButton>
+          <PrimaryButton full onClick={() => nav?.navigate("blank-home")}>
+            Verify
+          </PrimaryButton>
         </div>
       </div>
       <HomeIndicator />
@@ -634,6 +722,7 @@ function ScreenOtp() {
    ──────────────────────────────────────────────────────────── */
 
 function HomeHeader() {
+  const nav = useNav();
   return (
     <div className="shrink-0 px-5 pt-3">
       <div className="flex items-center justify-between">
@@ -642,7 +731,12 @@ function HomeHeader() {
         </span>
         <div className="flex items-center gap-3">
           <IoSearchOutline className="text-xl text-primary-700" />
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-300">
+          <button
+            type="button"
+            aria-label="Your profile"
+            onClick={() => nav?.navigate("member-profile")}
+            className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-300"
+          >
             <Image
               src={AVATAR_URL}
               alt="Sarah"
@@ -650,7 +744,7 @@ function HomeHeader() {
               sizes="36px"
               className="object-cover"
             />
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -659,7 +753,16 @@ function HomeHeader() {
 
 type Pill = "feed" | "spaces" | "events" | "members" | "leaderboard";
 
+const PILL_TO_SCREEN: Record<Pill, ScreenKey> = {
+  feed: "home-feed",
+  spaces: "spaces",
+  events: "events",
+  members: "home-feed",
+  leaderboard: "home-feed",
+};
+
 function HomePills({ active = "feed" }: { active?: Pill }) {
+  const nav = useNav();
   const pills: { id: Pill; label: string }[] = [
     { id: "feed", label: "Feed" },
     { id: "spaces", label: "Spaces" },
@@ -675,6 +778,8 @@ function HomePills({ active = "feed" }: { active?: Pill }) {
           return (
             <button
               key={id}
+              type="button"
+              onClick={() => nav?.navigate(PILL_TO_SCREEN[id])}
               className={`shrink-0 rounded-full px-3.5 py-1.5 font-outfit text-xs font-medium transition ${
                 isActive
                   ? "bg-dark-forest text-white"
@@ -760,6 +865,12 @@ function FadedAppScaffold() {
    ──────────────────────────────────────────────────────────── */
 
 function ScreenBlankHome() {
+  const nav = useNav();
+  useEffect(() => {
+    if (!nav) return;
+    const id = setTimeout(() => nav.navigate("lotus-popup"), 900);
+    return () => clearTimeout(id);
+  }, [nav]);
   return (
     <div className="flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -791,6 +902,7 @@ function LotusFlower() {
 }
 
 function ScreenLotusPopup() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-white">
       {/* faded scaffold behind */}
@@ -922,8 +1034,14 @@ function ScreenLotusPopup() {
           </div>
 
           <div className="mt-auto flex flex-col items-center gap-3 pb-8">
-            <PrimaryButton>Begin practice</PrimaryButton>
-            <button className="font-outfit text-sm text-primary-500 active:scale-95">
+            <PrimaryButton onClick={() => nav?.navigate("tour-practice")}>
+              Begin practice
+            </PrimaryButton>
+            <button
+              type="button"
+              onClick={() => nav?.navigate("save-profile")}
+              className="font-outfit text-sm text-primary-500 active:scale-95"
+            >
               Maybe later
             </button>
           </div>
@@ -943,12 +1061,16 @@ function TourSheet({
   body,
   field,
   ctaLabel = "Continue",
+  onContinue,
+  onSkip,
 }: {
   step: number;
   title: string;
   body: ReactNode;
   field?: ReactNode;
   ctaLabel?: string;
+  onContinue?: () => void;
+  onSkip?: () => void;
 }) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-4xl bg-white p-6 pt-3 shadow-[0_-20px_60px_-10px_rgba(0,0,0,0.25)]">
@@ -968,6 +1090,7 @@ function TourSheet({
           {step < 4 && (
             <button
               type="button"
+              onClick={onSkip}
               className="font-outfit text-[11px] font-medium text-primary-500 transition active:scale-95"
             >
               Skip
@@ -982,7 +1105,9 @@ function TourSheet({
         </div>
         {field && <div className="mt-5">{field}</div>}
         <div className="mt-5 flex">
-          <PrimaryButton full>{ctaLabel}</PrimaryButton>
+          <PrimaryButton full onClick={onContinue}>
+            {ctaLabel}
+          </PrimaryButton>
         </div>
       </div>
     </div>
@@ -1017,6 +1142,7 @@ function FieldDropdown({
 }
 
 function ScreenTourPractice() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -1044,12 +1170,15 @@ function ScreenTourPractice() {
             value="America / New York"
           />
         }
+        onContinue={() => nav?.navigate("tour-feed")}
+        onSkip={() => nav?.navigate("save-profile")}
       />
     </div>
   );
 }
 
 function ScreenTourFeed() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -1091,12 +1220,15 @@ function ScreenTourFeed() {
             ))}
           </div>
         }
+        onContinue={() => nav?.navigate("tour-channels")}
+        onSkip={() => nav?.navigate("save-profile")}
       />
     </div>
   );
 }
 
 function ScreenTourChannels() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -1132,12 +1264,15 @@ function ScreenTourChannels() {
             </div>
           </>
         }
+        onContinue={() => nav?.navigate("tour-you")}
+        onSkip={() => nav?.navigate("save-profile")}
       />
     </div>
   );
 }
 
 function ScreenTourYou() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -1168,6 +1303,7 @@ function ScreenTourYou() {
           />
         }
         ctaLabel="Finish setup"
+        onContinue={() => nav?.navigate("save-profile")}
       />
     </div>
   );
@@ -1257,6 +1393,7 @@ function SectionLabel({
 }
 
 function ScreenSaveProfile() {
+  const nav = useNav();
   const [name, setName] = useState("Sarah Kim");
   const [phone, setPhone] = useState("+1 (555) 123-4567");
   const [age, setAge] = useState("28");
@@ -1368,7 +1505,9 @@ function ScreenSaveProfile() {
         />
 
         <div className="mt-6">
-          <PrimaryButton full>Save &amp; begin</PrimaryButton>
+          <PrimaryButton full onClick={() => nav?.navigate("home-feed")}>
+            Save &amp; begin
+          </PrimaryButton>
         </div>
       </div>
 
@@ -1398,11 +1537,24 @@ function FeedPost({
   likes: number;
   comments: number;
 }) {
+  const nav = useNav();
   return (
-    <div className="rounded-2xl border border-primary-100 bg-white p-4">
+    <div
+      role={nav ? "button" : undefined}
+      tabIndex={nav ? 0 : undefined}
+      onClick={() => nav?.navigate("post-detail")}
+      className={`rounded-2xl border border-primary-100 bg-white p-4 ${nav ? "cursor-pointer transition active:scale-[0.99]" : ""}`}
+    >
       {/* Header */}
       <div className="flex items-center gap-2.5">
-        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-300">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            nav?.navigate("member-profile");
+          }}
+          className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-300"
+        >
           <Image
             src={AVATAR_URL}
             alt={authorName}
@@ -1410,7 +1562,7 @@ function FeedPost({
             sizes="36px"
             className="object-cover"
           />
-        </div>
+        </button>
         <div className="min-w-0 flex-1">
           <p className="truncate font-outfit text-sm font-semibold text-primary-950">
             {authorName}
@@ -1722,10 +1874,23 @@ const SPACES: SpaceItem[] = [
   },
 ];
 
+const SPACE_TO_SCREEN: Record<string, ScreenKey> = {
+  "say-hello": "say-hello",
+  guidelines: "community-guidelines",
+  heartalks: "heartalks",
+  resources: "resources",
+  "about-hkl": "about-hkl",
+};
+
 function SpaceRow({ item, meta }: { item: SpaceItem; meta?: string }) {
+  const nav = useNav();
   return (
     <button
       type="button"
+      onClick={() => {
+        const target = SPACE_TO_SCREEN[item.id];
+        if (target) nav?.navigate(target);
+      }}
       className="flex w-full items-center gap-3 rounded-xl border border-primary-100 bg-white p-3 text-left transition active:scale-[0.99]"
     >
       <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary-100">
@@ -1835,11 +2000,13 @@ function ScreenSpaces() {
    ──────────────────────────────────────────────────────────── */
 
 function SpaceTopBar({ title }: { title: string }) {
+  const nav = useNav();
   return (
     <div className="flex shrink-0 items-center gap-2 border-b border-primary-100 px-3 py-3">
       <button
         type="button"
         aria-label="Back"
+        onClick={() => nav?.back()}
         className="flex h-8 w-8 items-center justify-center rounded-full text-primary-700 active:bg-primary-50"
       >
         <IoChevronBack className="text-xl" />
@@ -2347,6 +2514,7 @@ const DAILY_COMMITMENT_SLIDES = [
 ];
 
 function ScreenDailyCommitment() {
+  const nav = useNav();
   const [selected, setSelected] = useState<string | null>("several");
 
   const options = [
@@ -2453,7 +2621,9 @@ function ScreenDailyCommitment() {
           </div>
 
           <div className="mt-5">
-            <PrimaryButton full>Submit</PrimaryButton>
+            <PrimaryButton full onClick={() => nav?.navigate("home-feed")}>
+              Submit
+            </PrimaryButton>
           </div>
         </div>
 
@@ -2618,10 +2788,12 @@ function ChatAvatar({ item }: { item: ChatItem }) {
 }
 
 function ChatRow({ item }: { item: ChatItem }) {
+  const nav = useNav();
   const hasUnread = (item.unread ?? 0) > 0;
   return (
     <button
       type="button"
+      onClick={() => nav?.navigate("dm-thread")}
       className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition active:bg-primary-50"
     >
       <ChatAvatar item={item} />
@@ -2667,6 +2839,7 @@ function ChatRow({ item }: { item: ChatItem }) {
 }
 
 function ScreenChat() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -2711,6 +2884,7 @@ function ScreenChat() {
       {/* FAB  new chat */}
       <button
         type="button"
+        onClick={() => nav?.navigate("new-message")}
         className="absolute right-4 bottom-24 z-30 flex items-center gap-2 rounded-full bg-dark-forest pl-3 pr-4 py-2.5 text-white shadow-[0_4px_12px_-4px_rgba(26,60,52,0.3)] transition active:scale-95"
       >
         <IoCreateOutline className="text-lg" />
@@ -2929,9 +3103,11 @@ function AlertAvatar({ item }: { item: AlertItem }) {
 }
 
 function AlertRow({ item }: { item: AlertItem }) {
+  const nav = useNav();
   return (
     <button
       type="button"
+      onClick={() => nav?.navigate("post-detail")}
       className={`relative flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition active:bg-primary-100 ${
         item.unread ? "bg-primary-50" : "bg-white"
       }`}
@@ -3136,9 +3312,11 @@ const EVENTS_LATER: EventListItem[] = [
 ];
 
 function EventRow({ item }: { item: EventListItem }) {
+  const nav = useNav();
   return (
     <button
       type="button"
+      onClick={() => nav?.navigate("event-detail")}
       className="flex w-full items-center gap-3 rounded-xl border border-primary-100 bg-white p-3 text-left transition active:scale-[0.99]"
     >
       <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-100">
@@ -3459,9 +3637,11 @@ const HEARTALKS_THREADS: Thread[] = [
 ];
 
 function ThreadRow({ item }: { item: Thread }) {
+  const nav = useNav();
   return (
     <button
       type="button"
+      onClick={() => nav?.navigate("post-detail")}
       className="flex w-full items-start gap-3 rounded-xl border border-primary-100 bg-white p-3 text-left transition active:scale-[0.99]"
     >
       <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-200">
@@ -3719,6 +3899,7 @@ const POST_COMMENTS: {
 ];
 
 function ScreenPostDetail() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -3831,7 +4012,11 @@ function ScreenPostDetail() {
         <div className="mt-3 space-y-4 px-5">
           {POST_COMMENTS.map((c) => (
             <div key={c.id} className="flex gap-3">
-              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-200">
+              <button
+                type="button"
+                onClick={() => nav?.navigate("member-profile")}
+                className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-200"
+              >
                 <Image
                   src={AVATAR_URL}
                   alt={c.authorName}
@@ -3839,7 +4024,7 @@ function ScreenPostDetail() {
                   sizes="32px"
                   className="object-cover"
                 />
-              </div>
+              </button>
               <div className="min-w-0 flex-1">
                 <div className="rounded-2xl bg-primary-50 px-3 py-2">
                   <p className="font-outfit text-[12px] font-semibold text-primary-950">
@@ -3950,6 +4135,7 @@ const DM_MESSAGES: DmMessage[] = [
 ];
 
 function ScreenDmThread() {
+  const nav = useNav();
   return (
     <div className="relative flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -3959,6 +4145,7 @@ function ScreenDmThread() {
         <button
           type="button"
           aria-label="Back"
+          onClick={() => nav?.back()}
           className="flex h-9 w-9 items-center justify-center rounded-full text-primary-700 active:bg-primary-50"
         >
           <IoChevronBack className="text-xl" />
@@ -4099,6 +4286,7 @@ function ProfileStat({ value, label }: { value: string; label: string }) {
 }
 
 function ScreenMemberProfile() {
+  const nav = useNav();
   return (
     <div className="flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -4140,6 +4328,7 @@ function ScreenMemberProfile() {
         <div className="mt-5 px-5">
           <button
             type="button"
+            onClick={() => nav?.navigate("dm-thread")}
             className="w-full rounded-full bg-dark-forest px-4 py-2.5 font-hkl-centra text-[12px] font-medium text-white transition active:scale-95"
           >
             Connect
@@ -4153,6 +4342,7 @@ function ScreenMemberProfile() {
         <div className="space-y-2 px-3">
           <button
             type="button"
+            onClick={() => nav?.navigate("post-detail")}
             className="block w-full rounded-xl border border-primary-100 bg-white p-3 text-left transition active:scale-[0.99]"
           >
             <p className="font-outfit text-sm font-semibold text-primary-950">
@@ -4168,6 +4358,7 @@ function ScreenMemberProfile() {
           </button>
           <button
             type="button"
+            onClick={() => nav?.navigate("post-detail")}
             className="block w-full rounded-xl border border-primary-100 bg-white p-3 text-left transition active:scale-[0.99]"
           >
             <p className="font-outfit text-sm font-semibold text-primary-950">
@@ -4206,6 +4397,7 @@ const NEW_MSG_SUGGESTIONS: {
 ];
 
 function ScreenNewMessage() {
+  const nav = useNav();
   return (
     <div className="flex h-full w-full flex-col bg-white">
       <StatusBar />
@@ -4214,6 +4406,7 @@ function ScreenNewMessage() {
       <div className="flex shrink-0 items-center justify-between border-b border-primary-100 px-3 py-2.5">
         <button
           type="button"
+          onClick={() => nav?.back()}
           className="rounded-full px-3 py-1 font-outfit text-[13px] text-primary-700 transition active:bg-primary-50"
         >
           Cancel
@@ -4223,8 +4416,8 @@ function ScreenNewMessage() {
         </h1>
         <button
           type="button"
-          disabled
-          className="rounded-full px-3 py-1 font-hkl-centra text-[12px] font-medium text-primary-300"
+          onClick={() => nav?.navigate("dm-thread")}
+          className="rounded-full px-3 py-1 font-hkl-centra text-[12px] font-medium text-primary-700"
         >
           Send
         </button>
@@ -4249,6 +4442,7 @@ function ScreenNewMessage() {
           <button
             key={p.id}
             type="button"
+            onClick={() => nav?.navigate("dm-thread")}
             className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition active:bg-primary-50"
           >
             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-primary-200">
@@ -5239,13 +5433,16 @@ function BWSpaceTopBar({ title }: { title: string }) {
 function BWPrimaryButton({
   children,
   full = false,
+  onClick,
 }: {
   children: ReactNode;
   full?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className={`${full ? "w-full" : "w-fit"} rounded-full bg-olive px-6 py-3 font-hkl-centra text-sm font-medium text-white transition active:scale-95`}
     >
       {children}
@@ -7101,6 +7298,91 @@ function ScreenResourcesBW() {
   );
 }
 
+/* ────────────────────────────────────────────────────────────
+   PlayPhone — interactive prototype with click-through navigation
+   ──────────────────────────────────────────────────────────── */
+
+const LIGHT_SCREEN_REGISTRY: Record<ScreenKey, ReactNode> = {
+  splash: <ScreenSplash />,
+  quote: <ScreenQuote />,
+  auth: <ScreenAuth />,
+  otp: <ScreenOtp />,
+  "blank-home": <ScreenBlankHome />,
+  "lotus-popup": <ScreenLotusPopup />,
+  "tour-practice": <ScreenTourPractice />,
+  "tour-feed": <ScreenTourFeed />,
+  "tour-channels": <ScreenTourChannels />,
+  "tour-you": <ScreenTourYou />,
+  "save-profile": <ScreenSaveProfile />,
+  "home-feed": <ScreenHomeFeed />,
+  "post-detail": <ScreenPostDetail />,
+  "daily-commitment": <ScreenDailyCommitment />,
+  chat: <ScreenChat />,
+  "dm-thread": <ScreenDmThread />,
+  "new-message": <ScreenNewMessage />,
+  alerts: <ScreenAlerts />,
+  events: <ScreenEvents />,
+  "event-detail": <ScreenEventDetail />,
+  spaces: <ScreenSpaces />,
+  "member-profile": <ScreenMemberProfile />,
+  "say-hello": <ScreenSayHello />,
+  "community-guidelines": <ScreenCommunityGuidelines />,
+  "about-hkl": <ScreenAboutHKL />,
+  heartalks: <ScreenHeartalks />,
+  resources: <ScreenResources />,
+};
+
+function PlayPhone({
+  initial = "splash",
+  label = "Play prototype",
+}: {
+  initial?: ScreenKey;
+  label?: string;
+}) {
+  const [history, setHistory] = useState<ScreenKey[]>([initial]);
+  const current = history[history.length - 1];
+  const navigate = (screen: ScreenKey) => {
+    setHistory((h) => [...h, screen]);
+  };
+  const back = () => {
+    setHistory((h) => (h.length > 1 ? h.slice(0, -1) : h));
+  };
+  const reset = () => setHistory([initial]);
+  return (
+    <NavContext.Provider value={{ navigate, back, current }}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-2 rounded-full bg-primary-950 px-3 py-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-mint" />
+          <span className="font-hkl-centra text-[10px] font-semibold uppercase tracking-widest text-white">
+            {label}
+          </span>
+        </div>
+        <PhoneFrame>{LIGHT_SCREEN_REGISTRY[current]}</PhoneFrame>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={back}
+            disabled={history.length <= 1}
+            className="rounded-full border border-primary-200 bg-white px-3 py-1.5 font-hkl-centra text-[10px] font-semibold text-primary-700 transition active:scale-95 disabled:opacity-30"
+          >
+            ← Back
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-full border border-primary-200 bg-white px-3 py-1.5 font-hkl-centra text-[10px] font-semibold text-primary-700 transition active:scale-95"
+          >
+            Restart
+          </button>
+          <span className="font-outfit text-[10px] text-primary-500">
+            {current}
+          </span>
+        </div>
+      </div>
+    </NavContext.Provider>
+  );
+}
+
 export default function HKLAppPrototype() {
   const lightModeScreens: { num: string; node: ReactNode }[] = [
     { num: "01", node: <ScreenSplash /> },
@@ -7136,9 +7418,10 @@ export default function HKLAppPrototype() {
     <main className="min-h-screen bg-white">
       <PrototypeSection
         eyebrow="Section 01"
-        title="Style guides"
-        description="Light + dark token systems side by side — the source of truth for both modes."
+        title="Style guides + interactive prototype"
+        description="Light & dark token systems plus a clickable play phone. Tap the play phone to walk the real user flow end-to-end."
       >
+        <PlayPhone initial="splash" label="Play prototype" />
         <PhoneFrame>
           <ScreenStyleGuide />
         </PhoneFrame>
